@@ -4,7 +4,7 @@
 int main(void)
 {
     //Ouverture de la fenêtre :
-    InitWindow(960, 540, "Test Raylib");
+    InitWindow(1920, 1080, "Test Raylib");
     Game game;
 
     InitGame(&game);
@@ -14,7 +14,7 @@ int main(void)
     while (!WindowShouldClose())
     {
         BeginDrawing();         
-        ClearBackground(RAYWHITE);
+        ClearBackground(SKYBLUE);
         DrawBoard(&game.board);
         //DrawTile(&tile);
         EndDrawing();
