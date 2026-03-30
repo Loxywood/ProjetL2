@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "game.h"
 #include "menu.h"
+#include "raylib.h"
 
 int main(void)
 {
@@ -10,7 +11,7 @@ int main(void)
     Menu menu;
 
     InitGame(&game);
-    initMenu(&menu);
+    initMenu(&menu,1);
     SetTargetFPS(60);
 
     //Game loop.
@@ -28,7 +29,7 @@ int main(void)
     
     }
 
-    closeMenu(menu);
+    closeMenu(&menu);
     CloseWindow();
     return 0;
 }

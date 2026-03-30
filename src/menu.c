@@ -1,12 +1,13 @@
 #include "menu.h"
 #include "raylib.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 
 
 void drawButon(Menu *m){
     for ( int i =0; i<m->nButton; i++){
-        DrawRectangleRect(m->buttons[i].rect, m->buttons[i].color);
+        DrawRectangleRec(m->buttons[i].rect, m->buttons[i].color);
     }
 }
 
@@ -37,7 +38,7 @@ void initMenu(Menu* m, int nb){
 
     m->buttons = malloc(sizeof(Button)*nb);
 
-    m->buttons[0] = (Button){{sWidth,sHeight,sWidth,sHeight},"Bouton 1", DARKBLUE};
+    m->buttons[0] = (Button){{wScale,hScale,wScale,hScale},"Bouton 1", DARKBLUE};
 }
 
 void closeMenu(Menu* m){

@@ -16,5 +16,7 @@ typedef struct{
 
 void drawButon(Menu* b);
 void actionButton(Menu* b);
+void initMenu(Menu* m, int nb);
+void closeMenu(Menu* m);
 
 #endif
