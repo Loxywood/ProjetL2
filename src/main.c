@@ -9,6 +9,7 @@ int main(void)
     InitWindow(960, 540, "Test Raylib");
     Game game;
     Menu menu;
+    int state = 0;
 
     InitGame(&game);
     initMenu(&menu,5);
@@ -17,16 +18,14 @@ int main(void)
     //Game loop.
     while (!WindowShouldClose())
     {
-        BeginDrawing();         
-        ClearBackground(RAYWHITE);
-        //DrawBoard(&game.board);
+        switch (state){
+        case 1:
+            runGame(&game);
+            break;
         
-        actionButton(&menu);
-        drawButton(&menu);
-        DrawFPS(10, 10);
-
-        EndDrawing();
-    
+        default:
+            runMenu(&menu, &state);
+        }
     }
 
     closeMenu(&menu);
