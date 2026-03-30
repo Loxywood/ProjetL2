@@ -5,9 +5,11 @@
 
 
 
-void drawButon(Menu *m){
+void drawButton(Menu *m){
     for ( int i =0; i<m->nButton; i++){
-        DrawRectangleRec(m->buttons[i].rect, m->buttons[i].color);
+        Button b = m->buttons[i];
+        DrawRectangleRec(b.rect, b.color);
+        DrawText(b.text, b.posText, b.rect.y, b.rect.height, b.colorT);
     }
 }
 
@@ -15,13 +17,16 @@ void actionButton(Menu *m){
     for (int i = 0; i<m->nButton; i++){
         Button *b = &m->buttons[i];
         if (CheckCollisionPointRec(GetMousePosition(), b->rect)) {
-            b->color = YELLOW;
+            b->color = DARKPURPLE;
+            b->colorT = PURPLE;
 
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 printf("Bouton cliqué\n");
             }
         }else{
             b->color = DARKBLUE;
+            b->colorT = BLUE;
+
         }
     }
 }
@@ -31,14 +36,16 @@ void initMenu(Menu* m, int nb){
     int sHeight = GetScreenHeight();
 
 
-    int hScale = sHeight / nb;
-    int wScale = sWidth / 3;
+    int wScale = sWidth / 2;
+    int hScale = sHeight / (nb+1);
 
     m->nButton = nb;
 
     m->buttons = malloc(sizeof(Button)*nb);
-
-    m->buttons[0] = (Button){{wScale,hScale,wScale,hScale},"Bouton 1", DARKBLUE};
+    for (int i = 0; i<nb; i++){
+        int textSize = MeasureText("Bouton", hScale);
+        m->buttons[i] = (Button){{wScale/2, (hScale*i)+((i+1)*hScale/(nb+1)), wScale,hScale},"Bouton", DARKBLUE, BLUE, wScale/2+((wScale-textSize)/2)};
+    }
 }
 
 void closeMenu(Menu* m){

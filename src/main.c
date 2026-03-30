@@ -11,19 +11,19 @@ int main(void)
     Menu menu;
 
     InitGame(&game);
-    initMenu(&menu,1);
+    initMenu(&menu,5);
     SetTargetFPS(60);
 
     //Game loop.
     while (!WindowShouldClose())
     {
         BeginDrawing();         
-        //ClearBackground(RAYWHITE);
+        ClearBackground(RAYWHITE);
         //DrawBoard(&game.board);
         
         actionButton(&menu);
-        drawButon(&menu);
-        
+        drawButton(&menu);
+        DrawFPS(10, 10);
 
         EndDrawing();
     

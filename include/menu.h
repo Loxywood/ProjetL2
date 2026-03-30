@@ -7,6 +7,8 @@ typedef struct {
     Rectangle rect;
     char* text;
     Color color;
+    Color colorT;
+    int posText;
 } Button;
 
 typedef struct{
@@ -14,7 +16,7 @@ typedef struct{
     Button* buttons; 
 } Menu;
 
-void drawButon(Menu* b);
+void drawButton(Menu* b);
 void actionButton(Menu* b);
 void initMenu(Menu* m, int nb);
 void closeMenu(Menu* m);
