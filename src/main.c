@@ -12,7 +12,8 @@ int main(void)
     int state = 0;
 
     InitGame(&game);
-    initMenu(&menu,3,(char **){"Start", "Settings", "Quit"}, &state);
+    const char* texts[] = {"Start", "Settings", "Quit"};
+    initMenu(&menu,3, texts, &state);
     SetTargetFPS(60);
 
     //Game loop.

@@ -4,8 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 //initialise chaque bouton du menu ( rajouter le faite que le text ce fasse a partir d'un fichier ou autre )
-void initMenu(Menu* menu, int numButton, char** texts, int* data){
+void initMenu(Menu* menu, int numButton, const char* texts[], int* data){
     //taille de la fenetre
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
@@ -22,9 +23,9 @@ void initMenu(Menu* menu, int numButton, char** texts, int* data){
     }
 
     for (int i = 0; i<numButton; i++){
-        char* text = texts[i];
+        const char* text = texts[i];
         int textSize = MeasureText(text, buttonHeight);
-        initButton(&menu->buttons[i], buttonWidth/2, (buttonHeight*i)+((i+1)*buttonHeight/(numButton+1)), buttonWidth, buttonHeight, text, buttonWidth/2+((buttonWidth-textSize)/2), buttonHeight/2+((buttonWidth-textSize)/2), DARKBLUE, BLUE, DARKPURPLE, PURPLE, data, i+1, &changeStatePlay);
+        initButton(&menu->buttons[i], buttonWidth/2, (buttonHeight*i)+((i+1)*buttonHeight/(numButton+1)), buttonWidth, buttonHeight, text, buttonWidth/2+((buttonWidth-textSize)/2), (buttonHeight*i)+((i+1)*buttonHeight/(numButton+1)), DARKBLUE, DARKPURPLE, BLUE, PURPLE, data, i+1, &changeStatePlay);
     }
 }
 
@@ -49,7 +50,7 @@ void checkMenuButton(Menu *menu){
             button->hover = 1;
 
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                button->action( button->data, button->state );
+                button->action( button);
                 printf("Bouton cliqué\n");
             }
         }else{
@@ -64,15 +65,16 @@ void closeMenu(Menu* m){
     free(m->buttons);
 }
 
-void changeStatePlay(void* actualData, int newState){
-    int* ad = (int *)actualData;
-    *ad = newState;
+void changeStatePlay(void* buttonPtr){
+    Button* button = (Button*)buttonPtr;
+    int* actualState = (int *)button->data;
+    *actualState = button->state;
 }
 
 void runMenu(Menu *menu){
     BeginDrawing();         
     ClearBackground(RAYWHITE);
-    actionButton(menu);
+    checkMenuButton(menu);
     drawMenuButton(menu);
     DrawFPS(10, 10);
     EndDrawing();

@@ -1,7 +1,7 @@
 #include "button.h"
 #include "raylib.h"
 
-void initButton(Button* b, int x, int y, int width, int height, char* text, Color rectColorOff, Color rectColorOn, Color textColorOff, Color textColorOn, int textX, int textY, void* data, int state, Action action){
+void initButton(Button* b, int x, int y, int width, int height, const char* text, int textX, int textY, Color rectColorOff, Color rectColorOn, Color textColorOff, Color textColorOn, void* data, int state, Action action){
     *b = (Button){
         .rect = {x, y, width, height},
         .text = text,
