@@ -1,70 +1,79 @@
 #include "menu.h"
 #include "raylib.h"
+#include "button.h"
 #include <stdio.h>
 #include <stdlib.h>
 
+//initialise chaque bouton du menu ( rajouter le faite que le text ce fasse a partir d'un fichier ou autre )
+void initMenu(Menu* menu, int numButton, char** texts, int* data){
+    //taille de la fenetre
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
 
-//dessiner le rectangle du bouton et ecrire au milieu de le text
-void drawButton(Menu *m){
-    for ( int i =0; i<m->nButton; i++){
-        Button b = m->buttons[i];
-        DrawRectangleRec(b.rect, b.color);
-        DrawText(b.text, b.posText, b.rect.y, b.rect.height, b.colorT);
+    //position au centre et espace par bouton a libérer
+    int buttonWidth = screenWidth / 2;//largeur du bouton égale a la moitié de la fenetre
+    int buttonHeight = screenHeight / (numButton+1);//+1 pour ecrire le bouton a partir du milieu
+
+    menu->numButton = numButton;
+    menu->buttons = malloc(sizeof(Button)*numButton);
+    if (menu->buttons == NULL){
+        printf("erreur malloc impossible");
+        return;
+    }
+
+    for (int i = 0; i<numButton; i++){
+        char* text = texts[i];
+        int textSize = MeasureText(text, buttonHeight);
+        initButton(&menu->buttons[i], buttonWidth/2, (buttonHeight*i)+((i+1)*buttonHeight/(numButton+1)), buttonWidth, buttonHeight, text, buttonWidth/2+((buttonWidth-textSize)/2), buttonHeight/2+((buttonWidth-textSize)/2), DARKBLUE, BLUE, DARKPURPLE, PURPLE, data, i+1, &changeStatePlay);
     }
 }
 
-//regarde pour chaque bouton si la souris est dessus et si elle clic
-void actionButton(Menu *m,int *state){
-    for (int i = 0; i<m->nButton; i++){
-        Button *b = &m->buttons[i];
-        if (CheckCollisionPointRec(GetMousePosition(), b->rect)) {
-            b->color = DARKPURPLE;
-            b->colorT = PURPLE;
-
-            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                b->changeState(state, b->state);
-                printf("Bouton cliqué\n");
-            }
+//dessiner le rectangle du bouton et ecrire au milieu de le text
+void drawMenuButton(Menu *menu){
+    for ( int i =0; i<menu->numButton; i++ ){
+        Button* button = &menu->buttons[i];
+        if ( button->hover ){
+            drawButtonOn(button);
         }else{
-            b->color = DARKBLUE;
-            b->colorT = BLUE;
-
+            drawButtonOff(button);
         }
     }
 }
 
-//initialise chaque bouton du menu ( rajouter le faite que le text ce fasse a partir d'un fichier ou autre )
-void initMenu(Menu* m, int nb){
-    int sWidth = GetScreenWidth();
-    int sHeight = GetScreenHeight();
+//regarde pour chaque bouton si la souris est dessus et si elle clic
+void checkMenuButton(Menu *menu){
+    for (int i = 0; i<menu->numButton; i++){
+        Button *button = &menu->buttons[i];
 
+        if ( CheckCollisionPointRec( GetMousePosition(), button->rect ) ) {
+            button->hover = 1;
 
-    int wScale = sWidth / 2;
-    int hScale = sHeight / (nb+1);
-
-    m->nButton = nb;
-
-    m->buttons = malloc(sizeof(Button)*nb);
-    for (int i = 0; i<nb; i++){
-        int textSize = MeasureText("Bouton", hScale);
-        m->buttons[i] = (Button){{wScale/2, (hScale*i)+((i+1)*hScale/(nb+1)), wScale,hScale},"Bouton", DARKBLUE, BLUE, wScale/2+((wScale-textSize)/2),i+1,changeState};
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                button->action( button->data, button->state );
+                printf("Bouton cliqué\n");
+            }
+        }else{
+            button->hover = 0;
+        }
     }
 }
+
 
 
 void closeMenu(Menu* m){
     free(m->buttons);
 }
 
-void changeState(int* state, int newState){
-    *state = newState;
+void changeStatePlay(void* actualData, int newState){
+    int* ad = (int *)actualData;
+    *ad = newState;
 }
 
-void runMenu(Menu *menu, int *state){
+void runMenu(Menu *menu){
     BeginDrawing();         
     ClearBackground(RAYWHITE);
-    actionButton(menu, state);
-    drawButton(menu);
+    actionButton(menu);
+    drawMenuButton(menu);
     DrawFPS(10, 10);
     EndDrawing();
 }

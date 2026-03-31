@@ -2,30 +2,18 @@
 #define MENU_H
 
 #include "raylib.h"
-
-typedef void (*ChangeState)(int* state, int newState);
-
-typedef struct {
-    Rectangle rect;
-    char* text;
-    Color color;
-    Color colorT;
-    int posText;
-    int state;
-    ChangeState changeState;
-
-} Button;
+#include "button.h"
 
 typedef struct{
-    int nButton;
+    int numButton;
     Button* buttons; 
 } Menu;
 
-void changeState(int* state, int newState);
-void drawButton(Menu* b);
-void actionButton(Menu* b,int* state);
-void initMenu(Menu* m, int nb);
+void changeStatePlay(void* data, int newstate);
+void drawMenuButton(Menu* b);
+void checkMenuButton(Menu* menu);
+void initMenu(Menu* m, int numButton, char** texts, int* state);
 void closeMenu(Menu* m);
-void runMenu(Menu* menu, int* state);
+void runMenu(Menu* menu);
 
-#endif
+#endif;

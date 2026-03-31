@@ -12,7 +12,7 @@ int main(void)
     int state = 0;
 
     InitGame(&game);
-    initMenu(&menu,5);
+    initMenu(&menu,3,(char **){"Start", "Settings", "Quit"}, &state);
     SetTargetFPS(60);
 
     //Game loop.
@@ -24,7 +24,7 @@ int main(void)
             break;
         
         default:
-            runMenu(&menu, &state);
+            runMenu(&menu);
         }
     }
 
