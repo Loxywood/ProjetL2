@@ -5,19 +5,21 @@ int main(void)
 {
     //Ouverture de la fenêtre :
     InitWindow(1920, 1080, "Test Raylib");
-    Game game;
-
-    InitGame(&game);
     SetTargetFPS(60);
+    
+    Game game;
+    InitGame(&game);
 
     //Game loop.
     while (!WindowShouldClose())
     {
+        //UpdateGame(&game);
+        
         BeginDrawing();         
         ClearBackground(SKYBLUE);
-        DrawBoard(&game.board);
+        DrawGame(&game);
         EndDrawing();
-    
+        
     }
     CloseWindow();
     return 0;
