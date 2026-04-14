@@ -9,3 +9,4 @@ typedef struct {
 
 void InitTile(Tile *tile, Texture2D texture, float posX, float posY);
 void DrawTile(Tile *t, float scale);
+Vector2 GetCellCenter(Tile tile, float scale);

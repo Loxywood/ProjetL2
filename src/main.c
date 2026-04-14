@@ -16,7 +16,6 @@ int main(void)
         BeginDrawing();         
         ClearBackground(SKYBLUE);
         DrawBoard(&game.board);
-        //DrawTile(&tile);
         EndDrawing();
     
     }
