@@ -5,3 +5,5 @@ typedef struct {
 }Game;
 
 void InitGame(Game *Game);
+void DrawGame(Game *game);
+void UpdateGame(Game *game);
