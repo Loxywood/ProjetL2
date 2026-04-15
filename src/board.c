@@ -1,5 +1,6 @@
 #include "board.h"
-
+#include "raylib.h"
+#include <stdlib.h>
 //Initialisation du plateau de jeu.
 void BoardInit(Board *board, int width, int height, float scale){
     //

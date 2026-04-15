@@ -1,4 +1,5 @@
 #include "tile.h"
+#include "raylib.h"
 
 void InitTile(Tile *tile, Texture2D texture, float posX, float posY) {
     tile->texture = texture;

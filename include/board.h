@@ -1,5 +1,7 @@
+#ifndef BOARD_H
+#define BOARD_H
+
 #include "tile.h"
-#include <stdlib.h>
 
 typedef struct board
 {
@@ -17,3 +19,5 @@ typedef struct board
 
 void BoardInit(Board *board, int width, int height, float scale);
 void DrawBoard(Board *board);
+
+#endif
