@@ -12,11 +12,11 @@ void InitGame(Game *game) {
 }
 
 void DrawGame(Game *game){
-    //fonction uqi gère l'affiche du jeu
+    //fonction qui gère l'affichage du jeu
     DrawBoard(&game->board);
     DrawEntity(&game->enemies[0], &game->board);
 }
 
 void UpdateGame(Game *game){
-    //fonction qui gere la logique du jeu
+    //fonction qui gère la logique du jeu
 }

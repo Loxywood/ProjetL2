@@ -4,7 +4,7 @@
 int main(void)
 {
     //Ouverture de la fenêtre :
-    InitWindow(1920, 1080, "Test Raylib");
+    InitWindow(1920, 1080, "Projet L2 info");
     SetTargetFPS(60);
     
     Game game;
