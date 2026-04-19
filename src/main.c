@@ -1,24 +1,25 @@
-#include <stdio.h>
+#include "raylib.h"
 #include "game.h"
 
 int main(void)
 {
     //Ouverture de la fenêtre :
-    InitWindow(960, 540, "Test Raylib");
+    InitWindow(1920, 1080, "Projet L2 info");
     SetTargetFPS(60);
     
     Game game;
     InitGame(&game);
 
-    while (!WindowShouldClose()){
-        
+    //Game loop.
+    while (!WindowShouldClose())
+    {
         //UpdateGame(&game);
-
+        
         BeginDrawing();         
-        ClearBackground(RAYWHITE);
+        ClearBackground(SKYBLUE);
         DrawGame(&game);
         EndDrawing();
-    
+        
     }
     CloseWindow();
     return 0;
