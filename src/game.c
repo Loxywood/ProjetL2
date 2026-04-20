@@ -6,7 +6,7 @@
 void InitGame(Game *game) {
     BoardInit(&game->board, 10, 10, GAME_SCALE);
 
-    Texture2D mob1 = LoadTexture("assets/character2.png");
+    Texture2D mob1 = LoadTexture("assets/character.png");
     //void InitEntity(Entity *entity, int posX, int posY, int hp, Texture2D *texture, EntityType type);
     InitEntity(&game->enemies[0], 1, 1, 20, &mob1, ENTITY_ENEMY);
 }
