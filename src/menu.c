@@ -13,7 +13,8 @@ void initMenu(Menu* menu, int numButton, const char* texts[], int* data){
 
     //position au centre et espace par bouton a libérer
     int buttonWidth = screenWidth / 2;//largeur du bouton égale a la moitié de la fenetre
-    int buttonHeight = screenHeight / (numButton+1);//+1 pour ecrire le bouton a partir du milieu
+    int buttonHeight = screenHeight / (numButton+1);//+1 pour centré les boutons
+    
 
     menu->numButton = numButton;
     menu->buttons = malloc(sizeof(Button)*numButton);
@@ -25,7 +26,9 @@ void initMenu(Menu* menu, int numButton, const char* texts[], int* data){
     for (int i = 0; i<numButton; i++){
         const char* text = texts[i];
         int textSize = MeasureText(text, buttonHeight);
-        initButton(&menu->buttons[i], buttonWidth/2, (buttonHeight*i)+((i+1)*buttonHeight/(numButton+1)), buttonWidth, buttonHeight, text, buttonWidth/2+((buttonWidth-textSize)/2), (buttonHeight*i)+((i+1)*buttonHeight/(numButton+1)), DARKBLUE, DARKPURPLE, BLUE, PURPLE, data, i+1, &changeStatePlay);
+        //mettre la position du centre de du bouton
+        initButton(&menu->buttons[i], screenWidth/2, (buttonHeight*(i+1)), buttonWidth, buttonHeight, text, DARKBLUE, DARKPURPLE, BLUE, PURPLE, data, i+1, &changeStatePlay);
+                                     // position x y , largeur hauteur du bouton, le text, les couleur non selectioné puis selectioné du rectangle et du text, la variable sible, l'état que va donner le bouton et la fonction associé
     }
 }
 

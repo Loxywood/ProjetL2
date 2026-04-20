@@ -1,19 +1,22 @@
 #include "button.h"
 #include "raylib.h"
 
-void initButton(Button* b, int x, int y, int width, int height, const char* text, int textX, int textY, Color rectColorOff, Color rectColorOn, Color textColorOff, Color textColorOn, void* data, int state, Action action){
+void initButton(Button* b, int x, int y, int width, int height, const char* text, Color rectColorOff, Color rectColorOn, Color textColorOff, Color textColorOn, void* data, int state, Action action){
+    int textSize = MeasureText(text, height);
+    
     *b = (Button){
-        .rect = {x, y, width, height},
+        .rect = {x-width/2, y-height/2, width, height},
         .text = text,
         .rectColorOff = rectColorOff,
         .rectColorOn = rectColorOn,
+        .textX = x-(textSize/2),
+        .textY = y-height/2,
         .textColorOff = textColorOff,
         .textColorOn = textColorOn,
-        .textX = textX,
-        .textY = textY,
         .data = data,
         .state = state,
-        .action = action
+        .action = action,
+        .hover = 0
     };
 }
 

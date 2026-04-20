@@ -20,7 +20,7 @@ typedef struct {
     Action action;
 } Button;
 
-void initButton(Button* b ,int x, int y, int width, int height, const char* text, int textX, int textY, Color rectColorOff, Color rectColorOn, Color textColorOff, Color textColorOn, void* data, int state, Action action);
+void initButton(Button* b ,int x, int y, int width, int height, const char* text, Color rectColorOff, Color rectColorOn, Color textColorOff, Color textColorOn, void* data, int state, Action action);
 void drawButtonOff(Button* b);
 void drawButtonOn(Button* b);
 
