@@ -11,14 +11,14 @@ typedef enum {
 
 typedef struct {
     EntityType type;
-    int posX; 
-    int posY;
+    Vector2 pos;
     int hp;
     int isAlive;
     Texture2D texture;
 } Entity;
 
-void InitEntity(Entity *entity, int posX, int posY, int hp, Texture2D *texture, EntityType type);
+void InitEntity(Entity *entity, Vector2 pos, int hp, Texture2D *texture, EntityType type);
 void DrawEntity(Entity *entity, Board *board);
+void UpdateEntity(Entity *entity, Board *Board, Vector2 pos);
 
 #endif

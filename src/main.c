@@ -1,10 +1,11 @@
 #include "raylib.h"
 #include "game.h"
+#include <stdio.h>
 
 int main(void)
 {
     //Ouverture de la fenêtre :
-    InitWindow(1920, 1080, "Projet L2 info");
+    InitWindow(960, 540, "Projet L2 info");
     SetTargetFPS(60);
     
     Game game;
@@ -17,6 +18,7 @@ int main(void)
         
         BeginDrawing();         
         ClearBackground(SKYBLUE);
+        UpdateGame(&game);
         DrawGame(&game);
         EndDrawing();
         
