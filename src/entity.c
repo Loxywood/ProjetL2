@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "raylib.h"
+#include <stdio.h>
 
 void InitEntity(Entity *entity, Vector2 pos, int hp, Texture2D *texture, EntityType type) {
     entity->isAlive = 1; // 1 vivant 0 mort
@@ -10,11 +11,15 @@ void InitEntity(Entity *entity, Vector2 pos, int hp, Texture2D *texture, EntityT
 }
 
 void DrawEntity(Entity *entity, Board *board) {
-    
-    DrawTexture(entity->texture, (int)entity->pos.x, (int)entity->pos.y, WHITE);
+    Vector2 pos = GetCellCenter(board->tiles[(int)entity->pos.x][(int)entity->pos.y], board->tile_scale);
+    pos.x -= (entity->texture.width * board->tile_scale) / 2.0f;
+    pos.y -= (entity->texture.height * board->tile_scale) / 2.0f;
+    DrawTextureEx(entity->texture, pos, 0.0, board->tile_scale, WHITE);
 }
 
 void UpdateEntity(Entity *entity, Board *board, Vector2 pos){
     //Update logiquement la position de l'entité
-    entity->pos = pos;
+    Vector2 newPos = (Vector2){entity->pos.x + pos.x, entity->pos.y + pos.y};
+    entity->pos = newPos;
+    printf("New position : %f, %f\n", entity->pos.x, entity->pos.y);
 }

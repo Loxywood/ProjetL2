@@ -28,19 +28,20 @@ void DrawGame(Game *game){
 
 void HandleKey(Game *game, int key){
     //Pour gérer les inputs du clavier et agir en conséquence.
+    //Finalement on transmet un déplacement dans la matrice du plateau plus qu'une position absolue.
     switch (key)
     {
     case KEY_UP:
-        game->player.pos.y -= 10;
+        UpdateEntity(&game->player,&game->board,(Vector2){1,0});
         break;
     case KEY_DOWN:
-        game->player.pos.y += 10;
+        UpdateEntity(&game->player,&game->board,(Vector2){-1,});
         break;
     case KEY_LEFT:
-        game->player.pos.x -= 10;
+        UpdateEntity(&game->player,&game->board,(Vector2){0,1});
         break;
     case KEY_RIGHT:
-        game->player.pos.x += 10;
+        UpdateEntity(&game->player,&game->board,(Vector2){0,-1});
         break;
     }
 }
