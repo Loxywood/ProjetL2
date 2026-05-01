@@ -18,6 +18,9 @@ int main(void)
         
         BeginDrawing();         
         ClearBackground(SKYBLUE);
+
+        
+
         UpdateGame(&game);
         DrawGame(&game);
         EndDrawing();

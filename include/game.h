@@ -14,5 +14,7 @@ typedef struct {
 void InitGame(Game *game);
 void DrawGame(Game *game);
 void UpdateGame(Game *game);
+//void KeyPressed(Game *game, int key);
+void HandleKey(Game *game, int key);
 
 #endif
