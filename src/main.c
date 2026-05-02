@@ -12,8 +12,7 @@ int main(void)
     int state = 0;
 
     InitGame(&game);
-    const char* texts[] = {"Start", "Settings", "Quit"};
-    initMenu(&menu,3, texts, &state);
+    InitMenu(&menu);
     SetTargetFPS(60);
 
     //Game loop.
@@ -25,11 +24,9 @@ int main(void)
             break;
         
         default:
-            runMenu(&menu);
+            DrawMenu(&menu);
         }
     }
-
-    closeMenu(&menu);
     CloseWindow();
     return 0;
 }

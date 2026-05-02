@@ -1,19 +1,16 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include "raylib.h"
 #include "button.h"
+#include "raylib.h"
 
-typedef struct{
-    int numButton;
-    Button* buttons; 
-} Menu;
+typedef struct Menu {
+    Button startButton;
+    Button SettingsButton;
+    Button quitButton;
+}Menu;
 
-void changeStatePlay(void* button);
-void drawMenuButton(Menu* b);
-void checkMenuButton(Menu* menu);
-void initMenu(Menu* m, int numButton, const char* texts[], int* state);
-void closeMenu(Menu* m);
-void runMenu(Menu* menu);
+void InitMenu(Menu *menu);
+void DrawMenu(Menu *menu);
 
 #endif

@@ -4,24 +4,13 @@
 
 typedef void (*Action)(void* button);
 
-typedef struct {
-    Rectangle rect;
-    const char* text;
-    Color rectColorOff;
-    Color rectColorOn;
-    Color textColorOff;
-    Color textColorOn;
-    int textX;
-    int textY;
-    char hover;
-    
-    void* data; 
-    int state;
-    Action action;
-} Button;
+typedef struct Button{
+    int x;
+    int y;
+    Texture2D texture;
+}Button;
 
-void initButton(Button* b ,int x, int y, int width, int height, const char* text, Color rectColorOff, Color rectColorOn, Color textColorOff, Color textColorOn, void* data, int state, Action action);
-void drawButtonOff(Button* b);
-void drawButtonOn(Button* b);
+void InitButton(Button *button, int x, int y, Texture2D texture);
+void DrawButton(Button *button);
 
 #endif
