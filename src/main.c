@@ -6,7 +6,7 @@
 int main(void)
 {
     //Ouverture de la fenêtre :
-    InitWindow(960, 540, "Test Raylib");
+    InitWindow(1920, 1080, "Test Raylib");
     Game game;
     Menu menu;
     int state = 0;
