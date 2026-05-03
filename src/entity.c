@@ -13,7 +13,7 @@ void InitEntity(Entity *entity, Vector2 pos, int hp, Texture2D *texture, EntityT
 void DrawEntity(Entity *entity, Board *board) {
     Vector2 pos = GetCellCenter(board->tiles[(int)entity->pos.x][(int)entity->pos.y], board->tile_scale);
     pos.x -= (entity->texture.width * board->tile_scale) / 2.0f;
-    pos.y -= (entity->texture.height * board->tile_scale) / 2.0f;
+    pos.y -= (entity->texture.height * board->tile_scale);
     DrawTextureEx(entity->texture, pos, 0.0, board->tile_scale, WHITE);
 }
 
