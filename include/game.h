@@ -4,11 +4,17 @@
 #include "board.h"
 #include "entity.h"
 
+typedef enum {
+        MENU,
+        GAME
+}GameState;
+
 typedef struct {
         Board board;
         Entity player;
         Entity enemies[10];
         int enemyAliveCount;
+        GameState state;
 }Game;
 
 void InitGame(Game *game);

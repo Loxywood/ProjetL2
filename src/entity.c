@@ -20,6 +20,15 @@ void DrawEntity(Entity *entity, Board *board) {
 void UpdateEntity(Entity *entity, Board *board, Vector2 pos){
     //Update logiquement la position de l'entité
     Vector2 newPos = (Vector2){entity->pos.x + pos.x, entity->pos.y + pos.y};
+    if (newPos.x < 0){
+        newPos.x = 0;
+    }else if (newPos.x >= board->width){
+        newPos.x = board->width - 1;
+    }else if (newPos.y < 0){
+        newPos.y = 0;
+    }else if (newPos.y >= board->height){
+        newPos.y = board->height - 1;
+    }
     entity->pos = newPos;
     printf("New position : %f, %f\n", entity->pos.x, entity->pos.y);
 }
