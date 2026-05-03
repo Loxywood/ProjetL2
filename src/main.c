@@ -24,6 +24,7 @@ int main(void)
             break;
         
         default:
+            updateMenu(&menu);
             DrawMenu(&menu);
         }
     }
