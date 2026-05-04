@@ -17,6 +17,22 @@ void DrawGame(Game *game){
     DrawEntity(&game->enemies[0], &game->board);
 }
 
-void UpdateGame(Game *game){
-    //fonction qui gère la logique du jeu
+void StateManager(Game *game){
+    switch (game->state)
+    {
+    case FIGHT:
+        //Il faudrait que si ESC est préssé, le menu s'affiche.utilisation der isPressed(ESC).
+        break;
+    case MENU:
+        //Si ESC est préssé ou "Jouer", le menu disparaisse.
+        break;
+    case SETTINGS:
+        //Seulement dans le cas où le bouton "Settings" du menu est préssé.
+        break;
+    case DIALOG:
+        //Déclencher en cas d'évènement à définir...
+        break;
+    default:
+        break;
+    }
 }
