@@ -5,7 +5,7 @@
 int main(void)
 {
     //Ouverture de la fenêtre :
-    InitWindow(960, 540, "Projet L2 info");
+    InitWindow(1920, 1080, "Projet L2 info");
     InitAudioDevice(); 
 
     float volume = 0.05f; //Valeur temporaire pour le bien de mon ouïe.

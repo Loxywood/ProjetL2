@@ -30,5 +30,5 @@ void UpdateEntity(Entity *entity, Board *board, Vector2 pos){
         newPos.y = board->height - 1;
     }
     entity->pos = newPos;
-    printf("New position : %f, %f\n", entity->pos.x, entity->pos.y);
+    //printf("New position : %f, %f\n", entity->pos.x, entity->pos.y);
 }
