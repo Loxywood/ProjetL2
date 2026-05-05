@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "game.h"
 #include "raylib.h"
 #include <stdio.h>
 
@@ -17,7 +18,7 @@ void DrawEntity(Entity *entity, Board *board) {
     DrawTextureEx(entity->texture, pos, 0.0, board->tile_scale, WHITE);
 }
 
-void UpdateEntity(Entity *entity, Board *board, Vector2 pos){
+void UpdateEntity(Entity *entity, Game* game, Board *board, Vector2 pos){
     //Update logiquement la position de l'entité
     Vector2 newPos = (Vector2){entity->pos.x + pos.x, entity->pos.y + pos.y};
     if (newPos.x < 0){
@@ -29,6 +30,11 @@ void UpdateEntity(Entity *entity, Board *board, Vector2 pos){
     }else if (newPos.y >= board->height){
         newPos.y = board->height - 1;
     }
-    entity->pos = newPos;
-    //printf("New position : %f, %f\n", entity->pos.x, entity->pos.y);
+    if( IsEmpty( game, newPos)){
+        entity->pos = newPos;
+        printf("position changé\n") ;
+        //printf("New position : %f, %f\n", entity->pos.x, entity->pos.y);
+    }else{
+        printf("échec du changement\n") ;
+    }
 }

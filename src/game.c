@@ -1,3 +1,5 @@
+
+#include "entity.h"
 #include "game.h"
 #include "raylib.h"
 #include <math.h>
@@ -8,6 +10,8 @@
 
 void InitGame(Game *game) {
     BoardInit(&game->board, 10, 10, GAME_SCALE);
+
+    game->enemyAliveCount = 0 ;
 
     Texture2D mob1 = LoadTexture("assets/character.png");
     //Initialisation du héros;
@@ -24,6 +28,10 @@ void DrawGame(Game *game){
     //fonction qui gère l'affichage du jeu
     DrawBoard(&game->board);
     DrawEntity(&game->player, &game->board);
+
+    for (int i = 0 ; i < game->enemyAliveCount ; i++){
+        DrawEntity(&game->enemies[i], &game->board);
+    }
 }
 
 void HandleKey(Game *game, int key){
@@ -32,19 +40,31 @@ void HandleKey(Game *game, int key){
     switch (key)
     {
     case KEY_UP:
-        UpdateEntity(&game->player,&game->board,(Vector2){-1,0});
+        UpdateEntity(&game->player, game, &game->board, (Vector2){-1,0});
         break;
     case KEY_DOWN:
-        UpdateEntity(&game->player,&game->board,(Vector2){1,0});
+        UpdateEntity(&game->player, game, &game->board,(Vector2){1,0});
         break;
     case KEY_LEFT:
-        UpdateEntity(&game->player,&game->board,(Vector2){0,-1});
+        UpdateEntity(&game->player, game, &game->board,(Vector2){0,-1});
         break;
     case KEY_RIGHT:
-        UpdateEntity(&game->player,&game->board,(Vector2){0,1});
+        UpdateEntity(&game->player, game, &game->board,(Vector2){0,1});
         break;
     }
 }
+
+void AddEnnemi(Game *game, Vector2 V){
+    if (game->enemyAliveCount < 10){
+
+        Texture2D mob1 = LoadTexture("assets/character2.png");
+        InitEntity(&game->enemies[game->enemyAliveCount], V, 1, &mob1, ENTITY_ENEMY);
+
+        game->enemyAliveCount++ ;
+    }
+}
+
+
 
 //savoir si la case est innocupé
 bool IsEmpty(Game *game, Vector2 V){
@@ -52,17 +72,18 @@ bool IsEmpty(Game *game, Vector2 V){
         if (game->enemies[i].pos.x == V.x && game->enemies[i].pos.y == V.y){ return false ;}
     }
     //en l'absence d'obstacles
-    return game->player.pos.x == V.x && game->player.pos.y == V.y ;
+    //joueur
+    return ! (game->player.pos.x == V.x && game->player.pos.y == V.y)  ;
 }
 
-
-//récupère l'entité sur une case donné (pourrais y ajouter une fonction)
-Entity* Affected(Game *game, Vector2 V){
+//récupère l'adresse d'une entité sur une case donné
+Entity* ENtityAt(Game *game, Vector2 V){
     for( int i = 0 ; i < game->enemyAliveCount ; i++){
         if (game->enemies[i].pos.x == V.x && game->enemies[i].pos.y == V.y){ return &game->enemies[i] ;}
     }
     if(game->player.pos.x == V.x && game->player.pos.y == V.y){return &game->player ;}
 }
+
 
 //donne le nombre de cases maximum concerné par un rayon
 int GetArea(int size){
@@ -79,7 +100,7 @@ void Explosion(Game *game, Vector2 V, int radius){
 
     for(int pos = 0 ; pos < D.cursor_a ; pos++){
         if ( ! IsEmpty(game, D.acces[pos])){
-            Entity* E = Affected(game, D.acces[pos]) ;
+            Entity* E = ENtityAt(game, D.acces[pos]) ;
             //ici on mettra l'effet //ou on passera la fonction dans le Affected
         }
     }

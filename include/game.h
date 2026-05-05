@@ -20,7 +20,7 @@ typedef enum {
         GAME
 }GameState;
 
-typedef struct {
+typedef struct Game{
         Board board;
         Entity player;
         Entity enemies[10];
@@ -28,6 +28,13 @@ typedef struct {
         GameState state;
 }Game;
 
+bool IsEmpty(Game *game, Vector2 V) ;
+
+int GetArea(int size) ;
+
+Entity* ENtityAt(Game *game, Vector2 V) ;
+
+void Explosion(Game *game, Vector2 V, int radius) ;
 
 void createDataMouv(int area, dataMove *D) ;
 
@@ -59,6 +66,7 @@ void FindZone(Game *game, dataMove *D, int x, int y, int area, int radius) ;
 void InitGame(Game *game);
 void DrawGame(Game *game);
 void UpdateGame(Game *game);
+void AddEnnemi(Game *game, Vector2 V) ;
 //void KeyPressed(Game *game, int key);
 void HandleKey(Game *game, int key);
 
