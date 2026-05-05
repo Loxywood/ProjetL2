@@ -52,7 +52,6 @@ void HandleKey(Game *game, int key){
     case KEY_RIGHT:
         UpdateEntity(&game->player, game, &game->board,(Vector2){0,1});
         break;
-        //!!!! a ne pas utiliser bug ALEATOIRE
     case KEY_SPACE :
         Explosion(game, game->player.pos, 2) ;
         break;
