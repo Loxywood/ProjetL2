@@ -32,6 +32,8 @@ bool IsEmpty(Game *game, Vector2 V) ;
 
 int GetArea(int size) ;
 
+void Push(Game *game, Vector2 origin, Vector2 aim) ;
+
 Entity* ENtityAt(Game *game, Vector2 V) ;
 
 void Explosion(Game *game, Vector2 V, int radius) ;
@@ -44,15 +46,15 @@ void initKnown(int area,dataMove *D) ;
 
 void initNext(int area,dataMove *D) ;
 
-void addKnown(dataMove *D, int x, int y);
+void addKnown(dataMove *D, int x, int y, int cap);
 
-void addAcces(dataMove *D, int x, int y) ;
+void addAcces(dataMove *D, int x, int y, int cap) ;
 
-void addNect(dataMove *D, int x, int y) ;
+void addNext(dataMove *D, int x, int y, int cap) ;
 
 int isIn(Vector2 * liste, int size, int x, int y) ; //pas besoin de data supplementaire
 
-void AddZone(Game *game, dataMove *D, int x, int y) ;
+void AddZone(Game *game, dataMove *D, int x, int y, int area) ;
 
 void FindZone(Game *game, dataMove *D, int x, int y, int area, int radius) ;
 

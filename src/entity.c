@@ -32,9 +32,9 @@ void UpdateEntity(Entity *entity, Game* game, Board *board, Vector2 pos){
     }
     if( IsEmpty( game, newPos)){
         entity->pos = newPos;
-        printf("position changé\n") ;
+        printf("position change\n") ;
         //printf("New position : %f, %f\n", entity->pos.x, entity->pos.y);
     }else{
-        printf("échec du changement\n") ;
+        printf("echec du changement\n") ;
     }
 }
