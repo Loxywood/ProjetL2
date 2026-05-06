@@ -19,6 +19,8 @@ int main(void)
     
     InitGame(&game);
     AddEnnemi(&game, (Vector2){5,6}) ;
+    AddWall(&game, (Vector2){7,6}) ;
+    AddWall(&game, (Vector2){6,6}) ;
 
     //Game loop.
     while (!WindowShouldClose())

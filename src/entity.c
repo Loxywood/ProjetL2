@@ -30,11 +30,12 @@ void UpdateEntity(Entity *entity, Game* game, Board *board, Vector2 pos){
     }else if (newPos.y >= board->height){
         newPos.y = board->height - 1;
     }
-    if( IsEmpty( game, newPos)){
+    if( IsEmpty( game, newPos) && ! IsWall( game, newPos)){
         entity->pos = newPos;
         printf("position change\n") ;
         //printf("New position : %f, %f\n", entity->pos.x, entity->pos.y);
     }else{
-        printf("echec du changement\n") ;
+        Attack(game, entity->pos, entity->pos) ;
+        printf("echec du changement + degats\n") ;
     }
 }

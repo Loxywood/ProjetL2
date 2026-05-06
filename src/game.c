@@ -13,6 +13,7 @@ void InitGame(Game *game) {
     BoardInit(&game->board, 10, 10, GAME_SCALE);
 
     game->enemyAliveCount = 0 ;
+    game->wallCount = 0 ;
 
     Texture2D mob1 = LoadTexture("assets/character.png");
     //Initialisation du héros;
@@ -32,6 +33,10 @@ void DrawGame(Game *game){
 
     for (int i = 0 ; i < game->enemyAliveCount ; i++){
         DrawEntity(&game->enemies[i], &game->board);
+    }
+
+    for (int j = 0 ; j < game->wallCount ; j++){
+        DrawEntity(&game->walls[j], &game->board);
     }
 }
 
@@ -58,6 +63,7 @@ void HandleKey(Game *game, int key){
     }
 }
 
+//fais apparaitre un ennemie (a renommer en anglais)
 void AddEnnemi(Game *game, Vector2 V){
     if (game->enemyAliveCount < 10){
 
@@ -68,9 +74,25 @@ void AddEnnemi(Game *game, Vector2 V){
     }
 }
 
+void AddWall(Game *game, Vector2 V){
+    if (game->wallCount < 20){
+
+        Texture2D wall = LoadTexture("assets/floor_tile.png");
+        InitEntity(&game->walls[game->wallCount], V, 1, &wall, ENTITY_ENEMY);
+
+        game->wallCount++ ;
+    }
+}
+
+bool IsWall(Game *game, Vector2 V){
+for( int i = 0 ; i < game->wallCount ; i++){
+        if (game->walls[i].pos.x == V.x && game->walls[i].pos.y == V.y){ return true ;}
+    }
+    return false ;
+}
 
 
-//savoir si la case est innocupé
+//savoir si la case est innocupé (ennemi ou player)
 bool IsEmpty(Game *game, Vector2 V){
     for( int i = 0 ; i < game->enemyAliveCount ; i++){
         if (game->enemies[i].pos.x == V.x && game->enemies[i].pos.y == V.y){ return false ;}
@@ -80,7 +102,7 @@ bool IsEmpty(Game *game, Vector2 V){
     return ! (game->player.pos.x == V.x && game->player.pos.y == V.y)  ;
 }
 
-//récupère l'adresse d'une entité sur une case donné
+//récupère l'adresse d'une entité (ennemie ou player) sur une case donné
 Entity* ENtityAt(Game *game, Vector2 V){
     for( int i = 0 ; i < game->enemyAliveCount ; i++){
         if (game->enemies[i].pos.x == V.x && game->enemies[i].pos.y == V.y){ return &game->enemies[i] ;}
@@ -97,6 +119,7 @@ int GetArea(int size){
 }
 
 
+//repousse toutes les entité d'une zone vers l'exterieur (on peut faire un pointeur de fonction pour utiliser autre chose que push)
 void Explosion(Game *game, Vector2 V, int radius){
     dataMove D ;
     createDataMouv(radius, &D) ;
@@ -114,7 +137,8 @@ void Explosion(Game *game, Vector2 V, int radius){
     free(D.next);
 }
 
-//pousse une personnage
+
+//pousse une personnage (à partir de cases)
 void Push(Game *game, Vector2 origin, Vector2 aim){
     Vector2 direction = (Vector2){0,0} ;
     if( ( ENtityAt(game, aim) ) != NULL){
@@ -129,7 +153,32 @@ void Push(Game *game, Vector2 origin, Vector2 aim){
 }
 
 
+void Attack(Game *game, Vector2 origin, Vector2 aim){
+    Entity* target = ENtityAt(game, aim) ;
+    if( target != NULL){
 
+        target->hp-- ;
+        if (target->hp <= 0){
+            EnemyDeath(game, aim) ;
+        }
+    }
+
+}
+
+void EnemyDeath(Game *game, Vector2 pos){
+    int index = 0 ;
+    for (int i = 0 ; i < game->enemyAliveCount ; i++){
+        if (game->enemies[i].pos.x == pos.x && game->enemies[i].pos.y == pos.y) {
+            index = i ;
+            break ;
+        }
+    }
+    game->enemyAliveCount-- ;
+    for (int enemy = index ; enemy < game->enemyAliveCount ; enemy++){
+        game->enemies[enemy] = game->enemies[enemy+1] ;
+    }
+
+}
 
 //init tout a 0
 void createDataMouv(int radius, dataMove *D) {
@@ -144,7 +193,7 @@ void createDataMouv(int radius, dataMove *D) {
 }
 
 
-
+//-1 -1 n'est pas atteignable et ne sera pas lu tant que les fonctions concernées sont utilisé
 //remet a zéro les listes de vecteur (cases)
 void initAcces(int area, dataMove *D){
     free(D->acces);
@@ -259,6 +308,9 @@ void FindZone(Game *game, dataMove *D, int x, int y, int area, int radius){
         }
     }
 }
+
+
+void SimplePath(){}
 
 
         
