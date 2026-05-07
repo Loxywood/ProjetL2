@@ -30,15 +30,19 @@ typedef struct Game{
         GameState state;
 }Game;
 
-bool IsEmpty(Game *game, Vector2 V) ;
+bool IsEmpty(Game *game, Vector2 V, bool playerIncluded) ;
 
 bool IsWall(Game *game, Vector2 V) ;
 
 int GetArea(int size) ;
 
+bool IsInBound(Board *board, Vector2 pos) ;
 
 
-void Push(Game *game, Vector2 origin, Vector2 aim) ;
+
+bool Push(Game *game, Vector2 origin, Vector2 aim) ;
+
+bool Move(Game * game, Vector2 origin, Vector2 dir, bool push) ;
 
 void Attack(Game *game, Vector2 origin, Vector2 aim) ;
 
@@ -68,18 +72,21 @@ void addNext(dataMove *D, int x, int y, int cap) ;
 
 
 
-int isIn(Vector2 * liste, int size, int x, int y) ; //pas besoin de data supplementaire
+int IsIn(Vector2 * liste, int size, int x, int y) ; //pas besoin de data supplementaire
 
-void AddZone(Game *game, dataMove *D, int x, int y, int area) ;
+void AddZone(Game *game, dataMove *D, int x, int y, int area, bool trough) ;
 
-void FindZone(Game *game, dataMove *D, int x, int y, int area, int radius) ;
+void FindZone(Game *game, dataMove *D, int x, int y, int area, int radius, bool trough) ;
 
+Vector2* GetPath(Game* game, Vector2 pos, Vector2 aim, int length) ;
 
+Vector2 RandomDir(Game * game, Vector2 pos) ;
 
+Vector2 SimplePath(Game *game, Vector2 pos, Vector2 aim) ;
 
+void EnemiesTurn(Game* game) ;
 
-
-
+void ListDir(Vector2 * dir) ;
 
 void InitGame(Game *game);
 void DrawGame(Game *game);

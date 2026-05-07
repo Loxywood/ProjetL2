@@ -46,16 +46,20 @@ void HandleKey(Game *game, int key){
     switch (key)
     {
     case KEY_UP:
-        UpdateEntity(&game->player, game, &game->board, (Vector2){-1,0});
+        Move(game, game->player.pos, (Vector2){-1,0}, false);
+        EnemiesTurn(game) ;
         break;
     case KEY_DOWN:
-        UpdateEntity(&game->player, game, &game->board,(Vector2){1,0});
+        Move(game, game->player.pos, (Vector2){1,0}, false);
+        EnemiesTurn(game) ;
         break;
     case KEY_LEFT:
-        UpdateEntity(&game->player, game, &game->board,(Vector2){0,-1});
+        Move(game, game->player.pos, (Vector2){0,-1}, false);
+        EnemiesTurn(game) ;
         break;
     case KEY_RIGHT:
-        UpdateEntity(&game->player, game, &game->board,(Vector2){0,1});
+        Move(game, game->player.pos, (Vector2){0,1}, false);
+        EnemiesTurn(game) ;
         break;
     case KEY_SPACE :
         Explosion(game, game->player.pos, 2) ;
@@ -91,15 +95,31 @@ for( int i = 0 ; i < game->wallCount ; i++){
     return false ;
 }
 
+bool IsInBound(Board *board, Vector2 pos){
+    if (pos.x < 0){
+        return false ;
+    }else if (pos.x >= board->width){
+        return false ;
+    }else if (pos.y < 0){
+        return false ;
+    }else if (pos.y >= board->height){
+        return false ;
+    }
+    return true ;
+}
 
 //savoir si la case est innocupé (ennemi ou player)
-bool IsEmpty(Game *game, Vector2 V){
+bool IsEmpty(Game *game, Vector2 pos, bool playerIncluded){
+    
     for( int i = 0 ; i < game->enemyAliveCount ; i++){
-        if (game->enemies[i].pos.x == V.x && game->enemies[i].pos.y == V.y){ return false ;}
+        if (game->enemies[i].pos.x == pos.x && game->enemies[i].pos.y == pos.y){ return false ;}
     }
     //en l'absence d'obstacles
     //joueur
-    return ! (game->player.pos.x == V.x && game->player.pos.y == V.y)  ;
+    if (playerIncluded){
+        return ! (game->player.pos.x == pos.x && game->player.pos.y == pos.y)  ;
+    }
+    return true ;   
 }
 
 //récupère l'adresse d'une entité (ennemie ou player) sur une case donné
@@ -124,10 +144,10 @@ void Explosion(Game *game, Vector2 V, int radius){
     dataMove D ;
     createDataMouv(radius, &D) ;
 
-    FindZone(game, &D, (int) V.x, (int) V.y, GetArea(radius) , radius) ;
+    FindZone(game, &D, (int) V.x, (int) V.y, GetArea(radius) , radius, true) ;
 
     for(int pos = 0 ; pos < D.cursor_a ; pos++){
-        if ( ! IsEmpty(game, D.acces[pos])){
+        if ( ! IsEmpty(game, D.acces[pos], true)){
             printf("entite trouve \n");
             Push(game, V, D.acces[pos]) ;
         }
@@ -139,7 +159,10 @@ void Explosion(Game *game, Vector2 V, int radius){
 
 
 //pousse une personnage (à partir de cases)
-void Push(Game *game, Vector2 origin, Vector2 aim){
+
+
+
+bool Push(Game *game, Vector2 origin, Vector2 aim){
     Vector2 direction = (Vector2){0,0} ;
     if( ( ENtityAt(game, aim) ) != NULL){
 
@@ -148,10 +171,32 @@ void Push(Game *game, Vector2 origin, Vector2 aim){
         if(origin.y > aim.y){ direction.y-- ;}
         if(origin.y < aim.y){ direction.y++ ;}
 
-        UpdateEntity(ENtityAt(game, aim), game, &game->board, direction) ;
+        return Move(game, aim, direction, true ) ;
     }
+    return false ;
 }
 
+bool Move(Game * game, Vector2 origin, Vector2 dir, bool push){
+    if (dir.x == 0  &&  0== dir.y){
+        return false ;
+    }
+
+    Vector2 aim = (Vector2){origin.x + dir.x, origin.y + dir.y};
+    if( ( ENtityAt(game, origin) ) != NULL){
+        if( (! IsInBound(&game->board, aim)) || IsWall(game, aim)){
+            return false ;
+        } 
+
+        if( !push ){
+            if (! IsEmpty(game, aim, true)){ return false ;}
+        }else{
+            if( (! IsEmpty(game, aim, true)) && ! Push(game, origin, aim) ){ return false ;}
+        }
+        
+        UpdateEntity(ENtityAt(game, origin), &game->board, dir) ;
+    }
+    return true ;
+}
 
 void Attack(Game *game, Vector2 origin, Vector2 aim){
     Entity* target = ENtityAt(game, aim) ;
@@ -254,7 +299,7 @@ void addNext(dataMove *D, int x, int y, int cap){
 
 
 //regarde si un vecteur est dans une liste
-int isIn(Vector2 * liste, int size, int x, int y){
+int IsIn(Vector2 * liste, int size, int x, int y){
     for (int i = 0 ; i < size ; i++){
         if(liste[i].x  == x && liste[i].y == y){
             return 1 ; //true : exploré
@@ -265,17 +310,24 @@ int isIn(Vector2 * liste, int size, int x, int y){
 
 
 //a partir d'une position vérifie si c'est une case accessible ajout les cases adjacent dans la liste de celles a regarder
-void AddZone(Game *game, dataMove *D, int x, int y, int area){
-    
-    if (! (x > -1 && x < game->board.width && y > -1 && y < game->board.height) ){ //déborde
-        return ;
-    }
-    //hors plateau
+void AddZone(Game *game, dataMove *D, int x, int y, int area, bool trough){
 
-    if ( isIn(D->acces, D->cursor_a, x, y) ){
+    //hors plateau
+    if (! (x > -1 && x < game->board.width && y > -1 && y < game->board.height) ){
         return ;
     }
+    
     //deja traversé
+    if ( IsIn(D->acces, D->cursor_a, x, y) ){
+        return ;
+    }
+
+    //case prise par une entité ou un mur dans le cas d'une interdiction de passer a travers (pour mob)
+    if ( (! trough) && ( (! IsEmpty(game, (Vector2){x,y}, false) ) || IsWall(game, (Vector2){x,y} ) ) ){
+        return ;
+    }
+
+    
     addAcces(D, x, y, area) ;
     
 
@@ -287,9 +339,15 @@ void AddZone(Game *game, dataMove *D, int x, int y, int area){
 }
 
 
-void FindZone(Game *game, dataMove *D, int x, int y, int area, int radius){ 
+void FindZone(Game *game, dataMove *D, int x, int y, int area, int radius, bool trough){ 
 
-    AddZone(game, D, x, y, area) ;
+    addAcces(D, x, y, area) ;
+    
+
+    addNext(D, x-1, y, area) ;
+    addNext(D, x+1, y, area) ;
+    addNext(D, x, y-1, area) ;
+    addNext(D, x, y+1, area) ;
     
 
     for (int i = 0 ; i < radius ; i++ ){
@@ -303,14 +361,94 @@ void FindZone(Game *game, dataMove *D, int x, int y, int area, int radius){
 
         //parcours la liste présente
         for (int n = 0 ; n < D->cursor ; n++){
-            AddZone(game, D, D->known[n].x , D->known[n].y, area ) ;
+            AddZone(game, D, D->known[n].x , D->known[n].y, area, trough ) ;
             //ajout des elements
         }
     }
 }
 
+Vector2* GetPath(Game* game, Vector2 pos, Vector2 aim, int length){
 
-void SimplePath(){}
+    if ((pos.x == aim.x) && (pos.y == aim.y)){
+        return &(Vector2){0,0} ;
+    }
+    if (length == 0){ return NULL ;}
 
 
+    Vector2 next ;
+    Vector2 choices[4] ; 
+    ListDir(choices) ;
+
+    for( int i = 0 ; i < 4 ; i++ ){
+        next = (Vector2){pos.x + choices[i].x, pos.y +choices[i].y}  ;
+        if ( IsInBound(&game->board, next) && IsEmpty(game, next, false) && (! IsWall(game, next )) ){
+            if (GetPath(game, next, aim, length -1) != NULL){
+                printf("trouve\n") ;
+                return &(Vector2){choices[i].x, choices[i].y} ;
+            }
+        }
+    }
+    return NULL ;
+}
+
+
+Vector2 SimplePath(Game *game, Vector2 pos, Vector2 aim){
+    dataMove D ;
+
+    for (int radius = 1 ; radius < 5 ; radius++){
+        createDataMouv(radius, &D) ;
         
+        FindZone(game, &D, (int) pos.x, (int) pos.y, GetArea(radius) , radius, false) ;
+
+        if( IsIn( D.acces, D.cursor_a, (int) aim.x, (int) aim.y )){
+            printf("find\n") ;
+            Vector2 result = *GetPath(game, pos, aim, radius) ;
+            free(D.known);
+            free(D.acces);
+            free(D.next);
+            
+            return result ;
+        }
+    }
+    printf("not found\n") ;
+    free(D.known);
+    free(D.acces);
+    free(D.next);
+    
+    return RandomDir(game, pos) ;
+}
+
+Vector2 RandomDir(Game * game, Vector2 pos){
+    int nb_dir = 0 ;
+    Vector2 choices[4] ; 
+    ListDir(choices) ;
+    Vector2 aim ; 
+
+    for( int i = 0 ; i < 4 ; i++ ){
+        aim = (Vector2){pos.x + choices[i].x, pos.y +choices[i].y}  ;
+
+        if ( IsInBound(&game->board, aim) && IsEmpty(game, aim , true) && (! IsWall(game, aim )) ){
+            choices[nb_dir] = choices[i] ;
+            nb_dir++ ;
+        }
+    }
+    int S = rand() %(nb_dir) ;
+    Vector2 V = choices[S] ;
+    return V ;
+
+}
+
+
+void EnemiesTurn(Game* game){
+    for( int i = 0 ; i < game->enemyAliveCount ; i++){
+        Move(game, game->enemies[i].pos, SimplePath(game, game->enemies[i].pos, game->player.pos), false )  ;
+    }
+}
+        
+
+void ListDir(Vector2 * dir){
+    dir[0] = (Vector2){0,1} ;
+    dir[1] = (Vector2){0,-1} ;
+    dir[2] = (Vector2){1,0} ;
+    dir[3] = (Vector2){-1,0} ;
+}

@@ -4,7 +4,7 @@
 #include "raylib.h"
 #include "board.h"
 
-
+//forward déclaaration pour utiliser l'adresse game
 typedef struct Game Game;
 
 typedef enum {
@@ -18,10 +18,13 @@ typedef struct {
     int hp;
     int isAlive;
     Texture2D texture;
+    bool stun ;
 } Entity;
 
 void InitEntity(Entity *entity, Vector2 pos, int hp, Texture2D *texture, EntityType type);
 void DrawEntity(Entity *entity, Board *board);
-void UpdateEntity(Entity *entity, Game* game, Board *Board, Vector2 pos);
+void UpdateEntity(Entity *entity, Board *Board, Vector2 pos);
+
+void GetStun(Entity * entity) ;
 
 #endif

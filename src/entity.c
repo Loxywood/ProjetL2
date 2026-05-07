@@ -9,6 +9,7 @@ void InitEntity(Entity *entity, Vector2 pos, int hp, Texture2D *texture, EntityT
     entity->hp = hp;
     entity->type = type;
     entity->texture = *texture;
+    entity->stun = false ;
 }
 
 void DrawEntity(Entity *entity, Board *board) {
@@ -18,7 +19,7 @@ void DrawEntity(Entity *entity, Board *board) {
     DrawTextureEx(entity->texture, pos, 0.0, board->tile_scale, WHITE);
 }
 
-void UpdateEntity(Entity *entity, Game* game, Board *board, Vector2 pos){
+void UpdateEntity(Entity *entity, Board *board, Vector2 pos){
     //Update logiquement la position de l'entité
     Vector2 newPos = (Vector2){entity->pos.x + pos.x, entity->pos.y + pos.y};
     if (newPos.x < 0){
@@ -30,12 +31,10 @@ void UpdateEntity(Entity *entity, Game* game, Board *board, Vector2 pos){
     }else if (newPos.y >= board->height){
         newPos.y = board->height - 1;
     }
-    if( IsEmpty( game, newPos) && ! IsWall( game, newPos)){
-        entity->pos = newPos;
-        printf("position change\n") ;
+    entity->pos = newPos;
         //printf("New position : %f, %f\n", entity->pos.x, entity->pos.y);
-    }else{
-        Attack(game, entity->pos, entity->pos) ;
-        printf("echec du changement + degats\n") ;
-    }
+}
+
+void GetStun(Entity * entity){
+    entity->stun = true ;
 }
