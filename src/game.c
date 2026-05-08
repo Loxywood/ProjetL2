@@ -7,10 +7,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
 #define GAME_SCALE 0.3f
 
 void InitGame(Game *game) {
     BoardInit(&game->board, 10, 10, GAME_SCALE);
+    game->turn = 0 ;
+    game->start = 0 ;
+    game->end = 0 ;
+    game->speed = 1 ;
 
     game->sprite[0] = (Texture2D) LoadTexture("assets/pouch.png"); 
     game->sprite[1] = (Texture2D) LoadTexture("assets/pouch_stun.png"); 
@@ -31,56 +36,95 @@ void InitGame(Game *game) {
     game->state = MENU;
 }
 
+void GameTime(Game* game){
+        game->start, game->end = 0 ;
+        game->turn = ( game->turn +1)  % (game->enemyAliveCount+1 ) ;
+}
+
 void UpdateGame(Game *game){
     //fonction qui gère la logique du jeu
     HandleKey(game, GetKeyPressed());
+    game->end ++ ;
+    EnemiesTurn(game) ;
 }
 
 void DrawGame(Game *game){
     //fonction qui gère l'affichage du jeu
     DrawBoard(&game->board);
     
+    //mur en fond
     for (int j = 0 ; j < game->wallCount ; j++){
         DrawEntity(&game->walls[j], &game->board);
     }
 
+    //ennemies
     for (int i = 0 ; i < game->enemyAliveCount ; i++){
         DrawEntity(&game->enemies[i], &game->board);
     }
     
+    //joueur
     DrawEntity(&game->player, &game->board);
 
-
+    //coeurs
     for (int hp = 0 ; hp < game->player.hp ; hp++){
         DrawTextureEx(game->HPtexture, (Vector2){10+(hp* 50),1}, 0.0, 0.3, WHITE);
     }
+
+    //defaite
+    if(game->player.hp < 1){
+        game->turn = 0 ;
+        const char* message = "DEFAITE" ;
+        DrawText(message, 250, 300, 350, BLACK) ;
+        //coordonnées a changer
+    }
+
+    if(game->enemyAliveCount < 1){
+        game->turn = 0 ;
+        const char* message = "Victoire" ;
+        DrawText(message, 250, 300, 350, BLACK) ;
+        //coordonnées a changer
+    }
+
 
 }
 
 void HandleKey(Game *game, int key){
     //Pour gérer les inputs du clavier et agir en conséquence.
     //Finalement on transmet un déplacement dans la matrice du plateau plus qu'une position absolue.
-    switch (key)
-    {
-    case KEY_UP:
-        Move(game, game->player.pos, (Vector2){-1,0}, true);
-        EnemiesTurn(game) ;
-        break;
-    case KEY_DOWN:
-        Move(game, game->player.pos, (Vector2){1,0}, true);
-        EnemiesTurn(game) ;
-        break;
-    case KEY_LEFT:
-        Move(game, game->player.pos, (Vector2){0,-1}, true);
-        EnemiesTurn(game) ;
-        break;
-    case KEY_RIGHT:
-        Move(game, game->player.pos, (Vector2){0,1}, true);
-        EnemiesTurn(game) ;
-        break;
-    case KEY_SPACE :
-        Explosion(game, game->player.pos, 2, Push) ;
-        break;
+    if (game->turn == 0 && game->start +  game->speed  < game->end  ){
+        switch (key)
+        {
+        case KEY_UP:
+            Move(game, game->player.pos, (Vector2){-1,0}, true);
+            game->player.ready++ ; 
+            GameTime(game) ;
+            break;
+
+        case KEY_DOWN:
+            Move(game, game->player.pos, (Vector2){1,0}, true);
+            game->player.ready++ ; 
+            GameTime(game) ;
+            break;
+
+        case KEY_LEFT:
+            Move(game, game->player.pos, (Vector2){0,-1}, true);
+            game->player.ready++ ; 
+            GameTime(game) ;
+            break;
+
+        case KEY_RIGHT:
+            Move(game, game->player.pos, (Vector2){0,1}, true);
+            game->player.ready++ ; 
+            GameTime(game) ;
+            break;
+
+        case KEY_SPACE :
+            if (game->player.ready > 0){
+                Explosion(game, game->player.pos, 2, Push) ;
+                game->player.ready-- ;
+            }
+            break;
+        }
     }
 }
 
@@ -404,6 +448,7 @@ void FindZone(Game *game, dataMove *D, int x, int y, int area, int radius, bool 
     }
 }
 
+//donne la direction a prendre
 Vector2* GetPath(Game* game, Vector2 pos, Vector2 aim, int length){
 
     if ((pos.x == aim.x) && (pos.y == aim.y)){
@@ -420,7 +465,6 @@ Vector2* GetPath(Game* game, Vector2 pos, Vector2 aim, int length){
         next = (Vector2){pos.x + choices[i].x, pos.y +choices[i].y}  ;
         if ( IsInBound(&game->board, next) && IsEmpty(game, next, false) && (! IsWall(game, next )) ){
             if (GetPath(game, next, aim, length -1) != NULL){
-                printf("trouve\n") ;
                 return &(Vector2){choices[i].x, choices[i].y} ;
             }
         }
@@ -428,7 +472,7 @@ Vector2* GetPath(Game* game, Vector2 pos, Vector2 aim, int length){
     return NULL ;
 }
 
-
+//cherche un chemin (vision limite)
 Vector2 SimplePath(Game *game, Vector2 pos, Vector2 aim){
     dataMove D ;
 
@@ -439,7 +483,6 @@ Vector2 SimplePath(Game *game, Vector2 pos, Vector2 aim){
         FindZone(game, &D, (int) pos.x, (int) pos.y, GetArea(radius) , radius, false) ;
 
         if( IsIn( D.acces, D.cursor_a, (int) aim.x, (int) aim.y )){
-            printf("find\n") ;
             Vector2 result = *GetPath(game, pos, aim, radius) ;
             free(D.known);
             free(D.acces);
@@ -453,7 +496,6 @@ Vector2 SimplePath(Game *game, Vector2 pos, Vector2 aim){
             return result ;
         }
     }
-    printf("not found\n") ;
     free(D.known);
     free(D.acces);
     free(D.next);
@@ -483,7 +525,11 @@ Vector2 RandomDir(Game * game, Vector2 pos){
 
 
 void EnemiesTurn(Game* game){
-    for( int i = 0 ; i < game->enemyAliveCount ; i++){
+    int i = game->turn ;
+    i-- ;
+    if ( i >= 0 && game->start + game->speed < game->end){
+
+
         if(game->enemies[i].coolDown > 0 ){
             GetBetter(game, &game->enemies[i]) ;
         }
@@ -502,9 +548,11 @@ void EnemiesTurn(Game* game){
             
         }
         
+        //si le joueur n'est pas detecté -> direction aléatoire
         else{
             Move(game, game->enemies[i].pos, SimplePath(game, game->enemies[i].pos, game->player.pos), false )  ;
         }
+        GameTime(game) ;
     }
 }
         

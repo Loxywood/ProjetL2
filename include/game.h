@@ -5,6 +5,7 @@
 #include <string.h>
 #include "board.h"
 #include "entity.h"
+#include <time.h>
 
 
 typedef struct {
@@ -31,6 +32,10 @@ typedef struct Game{
         GameState state;
         Texture2D sprite[10] ;
         Texture2D HPtexture ;
+        int turn ;
+        int start ;
+        int end  ;
+        int speed ;
 }Game;
 
 bool IsEmpty(Game *game, Vector2 V, bool playerIncluded) ;

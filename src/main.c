@@ -2,6 +2,7 @@
 #include "game.h"
 #include <stdio.h>
 
+
 int main(void)
 {
     //Ouverture de la fenêtre :
@@ -23,6 +24,8 @@ int main(void)
     AddWall(&game, (Vector2){7,6}) ;
     AddWall(&game, (Vector2){6,2}) ;
 
+
+
     //Game loop.
     while (!WindowShouldClose())
     {
@@ -38,6 +41,8 @@ int main(void)
         UpdateGame(&game);
         DrawGame(&game);
         EndDrawing();
+
+        
         
     }
     CloseWindow();

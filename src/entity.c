@@ -69,7 +69,7 @@ void GetBetter(Game* game, Entity * entity){
 }
 
 void GetReady(Game* game, Entity * entity){
-    entity->ready = 3 ;
+    entity->ready = 2 ;
     switch (entity->type)
     {
     case ENTITY_POUCH:
@@ -99,20 +99,23 @@ void Attack(Game* game, Entity * entity){
 }
 
 void Dash(Game* game, Entity* entity){
-    while (entity->ready > 0){
-        Move(game, entity->pos, SimplePath(game, entity->pos, game->player.pos), true )  ;
-        entity->ready-- ;
+    
+    Move(game, entity->pos, SimplePath(game, entity->pos, game->player.pos), true )  ;
+    entity->ready-- ;
+    game->turn-- ;
+    game->start = game->end ;
+
+    if (entity->ready == 0){
+        switch (entity->type)
+            {
+            case ENTITY_POUCH:
+                entity->texture = game->sprite[0] ;
+                break;
+            
+            case ENTITY_SPARCHU:
+                entity->texture = game->sprite[3] ;
+                break;
+            }
     }
-
-    switch (entity->type)
-        {
-        case ENTITY_POUCH:
-            entity->texture = game->sprite[0] ;
-            break;
-        
-        case ENTITY_SPARCHU:
-            entity->texture = game->sprite[3] ;
-            break;
-        }
-
 }
+
