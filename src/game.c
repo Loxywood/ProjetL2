@@ -12,12 +12,22 @@
 void InitGame(Game *game) {
     BoardInit(&game->board, 10, 10, GAME_SCALE);
 
+    game->sprite[0] = (Texture2D) LoadTexture("assets/pouch.png"); 
+    game->sprite[1] = (Texture2D) LoadTexture("assets/pouch_stun.png"); 
+    game->sprite[2] = (Texture2D) LoadTexture("assets/pouch_ready.png"); 
+
+    game->sprite[3] = (Texture2D) LoadTexture("assets/sparchu.png"); 
+    game->sprite[4] = (Texture2D) LoadTexture("assets/sparchu_stun.png"); 
+    game->sprite[5] = (Texture2D) LoadTexture("assets/sparchu_ready.png"); 
+
+    game->HPtexture = (Texture2D) LoadTexture("assets/heart.png"); 
+
     game->enemyAliveCount = 0 ;
     game->wallCount = 0 ;
 
     Texture2D mob1 = LoadTexture("assets/character.png");
     //Initialisation du héros;
-    InitEntity(&game->player, (Vector2){0,0}, 100, &mob1, ENTITY_PLAYER);
+    InitEntity(&game->player, (Vector2){0,0}, 3, &mob1, ENTITY_PLAYER);
     game->state = MENU;
 }
 
@@ -29,15 +39,22 @@ void UpdateGame(Game *game){
 void DrawGame(Game *game){
     //fonction qui gère l'affichage du jeu
     DrawBoard(&game->board);
-    DrawEntity(&game->player, &game->board);
+    
+    for (int j = 0 ; j < game->wallCount ; j++){
+        DrawEntity(&game->walls[j], &game->board);
+    }
 
     for (int i = 0 ; i < game->enemyAliveCount ; i++){
         DrawEntity(&game->enemies[i], &game->board);
     }
+    
+    DrawEntity(&game->player, &game->board);
 
-    for (int j = 0 ; j < game->wallCount ; j++){
-        DrawEntity(&game->walls[j], &game->board);
+
+    for (int hp = 0 ; hp < game->player.hp ; hp++){
+        DrawTextureEx(game->HPtexture, (Vector2){10+(hp* 50),1}, 0.0, 0.3, WHITE);
     }
+
 }
 
 void HandleKey(Game *game, int key){
@@ -46,42 +63,47 @@ void HandleKey(Game *game, int key){
     switch (key)
     {
     case KEY_UP:
-        Move(game, game->player.pos, (Vector2){-1,0}, false);
+        Move(game, game->player.pos, (Vector2){-1,0}, true);
         EnemiesTurn(game) ;
         break;
     case KEY_DOWN:
-        Move(game, game->player.pos, (Vector2){1,0}, false);
+        Move(game, game->player.pos, (Vector2){1,0}, true);
         EnemiesTurn(game) ;
         break;
     case KEY_LEFT:
-        Move(game, game->player.pos, (Vector2){0,-1}, false);
+        Move(game, game->player.pos, (Vector2){0,-1}, true);
         EnemiesTurn(game) ;
         break;
     case KEY_RIGHT:
-        Move(game, game->player.pos, (Vector2){0,1}, false);
+        Move(game, game->player.pos, (Vector2){0,1}, true);
         EnemiesTurn(game) ;
         break;
     case KEY_SPACE :
-        Explosion(game, game->player.pos, 2) ;
+        Explosion(game, game->player.pos, 2, Push) ;
         break;
     }
 }
 
 //fais apparaitre un ennemie (a renommer en anglais)
-void AddEnnemi(Game *game, Vector2 V){
+void AddEnnemiPouch(Game *game, Vector2 V){
     if (game->enemyAliveCount < 10){
-
-        Texture2D mob1 = LoadTexture("assets/character2.png");
-        InitEntity(&game->enemies[game->enemyAliveCount], V, 1, &mob1, ENTITY_ENEMY);
-
+        InitEntity(&game->enemies[game->enemyAliveCount], V, 1, &game->sprite[0], ENTITY_POUCH);
         game->enemyAliveCount++ ;
     }
 }
 
+void AddEnnemiSparchu(Game *game, Vector2 V){
+    if (game->enemyAliveCount < 10){
+        InitEntity(&game->enemies[game->enemyAliveCount], V, 1, &game->sprite[3], ENTITY_SPARCHU);
+        game->enemyAliveCount++ ;
+    }
+}
+
+
 void AddWall(Game *game, Vector2 V){
     if (game->wallCount < 20){
 
-        Texture2D wall = LoadTexture("assets/floor_tile.png");
+        Texture2D wall = LoadTexture("assets/bolder.png");
         InitEntity(&game->walls[game->wallCount], V, 1, &wall, ENTITY_ENEMY);
 
         game->wallCount++ ;
@@ -140,7 +162,7 @@ int GetArea(int size){
 
 
 //repousse toutes les entité d'une zone vers l'exterieur (on peut faire un pointeur de fonction pour utiliser autre chose que push)
-void Explosion(Game *game, Vector2 V, int radius){
+void Explosion(Game *game, Vector2 V, int radius, bool (*effect)(Game*, Vector2, Vector2)){
     dataMove D ;
     createDataMouv(radius, &D) ;
 
@@ -148,8 +170,7 @@ void Explosion(Game *game, Vector2 V, int radius){
 
     for(int pos = 0 ; pos < D.cursor_a ; pos++){
         if ( ! IsEmpty(game, D.acces[pos], true)){
-            printf("entite trouve \n");
-            Push(game, V, D.acces[pos]) ;
+            effect(game, V, D.acces[pos]) ;
         }
     }
     free(D.known);
@@ -166,12 +187,23 @@ bool Push(Game *game, Vector2 origin, Vector2 aim){
     Vector2 direction = (Vector2){0,0} ;
     if( ( ENtityAt(game, aim) ) != NULL){
 
+        if (origin.x == aim.x && origin.y == aim.y){ return true ;}
+
         if(origin.x > aim.x){ direction.x-- ;}
         if(origin.x < aim.x){ direction.x++ ;}
         if(origin.y > aim.y){ direction.y-- ;}
         if(origin.y < aim.y){ direction.y++ ;}
 
-        return Move(game, aim, direction, true ) ;
+        bool succes = Move(game, aim, direction, true ) ;
+        if (! succes){
+            if (ENtityAt(game, aim)->coolDown > 0){
+                Deals(game, origin, aim) ;
+            }
+            if( ( ENtityAt(game, aim) ) != NULL){
+                GetStun(game, ENtityAt(game, aim)) ;
+            }
+        }
+        return succes ;
     }
     return false ;
 }
@@ -198,15 +230,20 @@ bool Move(Game * game, Vector2 origin, Vector2 dir, bool push){
     return true ;
 }
 
-void Attack(Game *game, Vector2 origin, Vector2 aim){
+bool Deals(Game *game, Vector2 origin, Vector2 aim){
     Entity* target = ENtityAt(game, aim) ;
     if( target != NULL){
 
         target->hp-- ;
         if (target->hp <= 0){
-            EnemyDeath(game, aim) ;
+            if( target != &game->player){
+                EnemyDeath(game, aim) ;
+                return true ;
+            }
         }
+        
     }
+    return false ;
 
 }
 
@@ -396,6 +433,7 @@ Vector2 SimplePath(Game *game, Vector2 pos, Vector2 aim){
     dataMove D ;
 
     for (int radius = 1 ; radius < 5 ; radius++){
+
         createDataMouv(radius, &D) ;
         
         FindZone(game, &D, (int) pos.x, (int) pos.y, GetArea(radius) , radius, false) ;
@@ -407,6 +445,11 @@ Vector2 SimplePath(Game *game, Vector2 pos, Vector2 aim){
             free(D.acces);
             free(D.next);
             
+            if(radius == 1){
+                GetReady(game, ENtityAt(game, pos));
+                return (Vector2){0,0} ;
+            }
+
             return result ;
         }
     }
@@ -441,7 +484,17 @@ Vector2 RandomDir(Game * game, Vector2 pos){
 
 void EnemiesTurn(Game* game){
     for( int i = 0 ; i < game->enemyAliveCount ; i++){
-        Move(game, game->enemies[i].pos, SimplePath(game, game->enemies[i].pos, game->player.pos), false )  ;
+        if(game->enemies[i].coolDown > 0 ){
+            GetBetter(game, &game->enemies[i]) ;
+        }
+        else if (game->enemies[i].ready)
+        {
+            Attack(game, &game->enemies[i]) ;
+        }
+        
+        else{
+            Move(game, game->enemies[i].pos, SimplePath(game, game->enemies[i].pos, game->player.pos), false )  ;
+        }
     }
 }
         

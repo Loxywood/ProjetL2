@@ -6,6 +6,7 @@
 #include "board.h"
 #include "entity.h"
 
+
 typedef struct {
     Vector2 *acces ;
     int cursor_a  ;
@@ -28,6 +29,8 @@ typedef struct Game{
         int enemyAliveCount;
         int wallCount ;
         GameState state;
+        Texture2D sprite[10] ;
+        Texture2D HPtexture ;
 }Game;
 
 bool IsEmpty(Game *game, Vector2 V, bool playerIncluded) ;
@@ -44,7 +47,7 @@ bool Push(Game *game, Vector2 origin, Vector2 aim) ;
 
 bool Move(Game * game, Vector2 origin, Vector2 dir, bool push) ;
 
-void Attack(Game *game, Vector2 origin, Vector2 aim) ;
+bool Deals(Game *game, Vector2 origin, Vector2 aim) ;
 
 void EnemyDeath(Game *game, Vector2 pos) ;
 
@@ -52,7 +55,7 @@ void EnemyDeath(Game *game, Vector2 pos) ;
 
 Entity* ENtityAt(Game *game, Vector2 V) ;
 
-void Explosion(Game *game, Vector2 V, int radius) ;
+void Explosion(Game *game, Vector2 V, int radius, bool (*effect)(Game*, Vector2, Vector2)) ;
 
 
 
@@ -91,8 +94,11 @@ void ListDir(Vector2 * dir) ;
 void InitGame(Game *game);
 void DrawGame(Game *game);
 void UpdateGame(Game *game);
-void AddEnnemi(Game *game, Vector2 V) ;
+
+void AddEnnemiPouch(Game *game, Vector2 V) ;
+void AddEnnemiSparchu(Game *game, Vector2 V) ;
 void AddWall(Game *game, Vector2 V) ;
+
 //void KeyPressed(Game *game, int key);
 void HandleKey(Game *game, int key);
 

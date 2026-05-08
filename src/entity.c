@@ -9,7 +9,8 @@ void InitEntity(Entity *entity, Vector2 pos, int hp, Texture2D *texture, EntityT
     entity->hp = hp;
     entity->type = type;
     entity->texture = *texture;
-    entity->stun = false ;
+    entity->coolDown = 0 ;
+    entity->ready = false ;
 }
 
 void DrawEntity(Entity *entity, Board *board) {
@@ -35,6 +36,64 @@ void UpdateEntity(Entity *entity, Board *board, Vector2 pos){
         //printf("New position : %f, %f\n", entity->pos.x, entity->pos.y);
 }
 
-void GetStun(Entity * entity){
-    entity->stun = true ;
+void GetStun(Game* game, Entity * entity){
+    entity->coolDown = 2 ;
+    entity->ready = false ;
+    switch (entity->type)
+    {
+    case ENTITY_POUCH:
+        entity->texture = game->sprite[1] ;
+        break;
+    
+    case ENTITY_SPARCHU:
+        entity->texture = game->sprite[4] ;
+        break;
+    }
+
+}
+
+void GetBetter(Game* game, Entity * entity){
+    entity->coolDown--;
+    if (entity->coolDown == 0){
+        switch (entity->type)
+        {
+        case ENTITY_POUCH:
+            entity->texture = game->sprite[0] ;
+            break;
+        
+        case ENTITY_SPARCHU:
+            entity->texture = game->sprite[3] ;
+            break;
+        }
+    }
+}
+
+void GetReady(Game* game, Entity * entity){
+    entity->ready = true ;
+    switch (entity->type)
+    {
+    case ENTITY_POUCH:
+        entity->texture = game->sprite[2] ;
+        break;
+    
+    case ENTITY_SPARCHU:
+        entity->texture = game->sprite[5] ;
+        break;
+    }
+}
+
+void Attack(Game* game, Entity * entity){
+    entity->ready = false ;
+    entity->hp++ ;
+    Explosion(game, entity->pos, 1, Deals) ;
+    switch (entity->type)
+        {
+        case ENTITY_POUCH:
+            entity->texture = game->sprite[0] ;
+            break;
+        
+        case ENTITY_SPARCHU:
+            entity->texture = game->sprite[3] ;
+            break;
+        }
 }

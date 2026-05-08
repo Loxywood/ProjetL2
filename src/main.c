@@ -18,9 +18,10 @@ int main(void)
     PlayMusicStream(music);
     
     InitGame(&game);
-    AddEnnemi(&game, (Vector2){5,6}) ;
+    AddEnnemiPouch(&game, (Vector2){5,6}) ;
+    AddEnnemiSparchu(&game, (Vector2){8,8}) ;
     AddWall(&game, (Vector2){7,6}) ;
-    AddWall(&game, (Vector2){6,6}) ;
+    AddWall(&game, (Vector2){6,2}) ;
 
     //Game loop.
     while (!WindowShouldClose())
