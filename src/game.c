@@ -445,7 +445,7 @@ Vector2 SimplePath(Game *game, Vector2 pos, Vector2 aim){
             free(D.acces);
             free(D.next);
             
-            if(radius == 1){
+            if(radius == 1 && ENtityAt(game, pos)->ready == 0){
                 GetReady(game, ENtityAt(game, pos));
                 return (Vector2){0,0} ;
             }
@@ -489,7 +489,17 @@ void EnemiesTurn(Game* game){
         }
         else if (game->enemies[i].ready)
         {
-            Attack(game, &game->enemies[i]) ;
+            switch (game->enemies[i].type)
+            {
+            case ENTITY_POUCH:
+                Attack(game, &game->enemies[i]) ;
+                break;
+            
+            case ENTITY_SPARCHU:
+                Dash(game,  &game->enemies[i]) ;
+                break;
+            }
+            
         }
         
         else{

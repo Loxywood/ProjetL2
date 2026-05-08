@@ -21,7 +21,7 @@ typedef struct {
     int isAlive;
     Texture2D texture;
     int coolDown ;
-    bool ready ;
+    int ready ;
 } Entity;
 
 void InitEntity(Entity *entity, Vector2 pos, int hp, Texture2D *texture, EntityType type);
@@ -35,5 +35,7 @@ void GetBetter(Game* game, Entity * entity) ;
 void GetReady(Game* game, Entity * entity) ;
 
 void Attack(Game* game, Entity * entity) ;
+
+void Dash(Game* game, Entity* entity) ;
 
 #endif

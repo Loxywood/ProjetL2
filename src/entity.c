@@ -10,7 +10,7 @@ void InitEntity(Entity *entity, Vector2 pos, int hp, Texture2D *texture, EntityT
     entity->type = type;
     entity->texture = *texture;
     entity->coolDown = 0 ;
-    entity->ready = false ;
+    entity->ready = 0 ;
 }
 
 void DrawEntity(Entity *entity, Board *board) {
@@ -69,7 +69,7 @@ void GetBetter(Game* game, Entity * entity){
 }
 
 void GetReady(Game* game, Entity * entity){
-    entity->ready = true ;
+    entity->ready = 3 ;
     switch (entity->type)
     {
     case ENTITY_POUCH:
@@ -83,7 +83,7 @@ void GetReady(Game* game, Entity * entity){
 }
 
 void Attack(Game* game, Entity * entity){
-    entity->ready = false ;
+    entity->ready = 0 ;
     entity->hp++ ;
     Explosion(game, entity->pos, 1, Deals) ;
     switch (entity->type)
@@ -96,4 +96,23 @@ void Attack(Game* game, Entity * entity){
             entity->texture = game->sprite[3] ;
             break;
         }
+}
+
+void Dash(Game* game, Entity* entity){
+    while (entity->ready > 0){
+        Move(game, entity->pos, SimplePath(game, entity->pos, game->player.pos), true )  ;
+        entity->ready-- ;
+    }
+
+    switch (entity->type)
+        {
+        case ENTITY_POUCH:
+            entity->texture = game->sprite[0] ;
+            break;
+        
+        case ENTITY_SPARCHU:
+            entity->texture = game->sprite[3] ;
+            break;
+        }
+
 }
