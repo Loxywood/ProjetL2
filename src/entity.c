@@ -37,16 +37,20 @@ void UpdateEntity(Entity *entity, Board *board, Vector2 pos){
 }
 
 void GetStun(Game* game, Entity * entity){
-    entity->coolDown = 2 ;
-    entity->ready = false ;
+    entity->ready = 0 ;
     switch (entity->type)
     {
     case ENTITY_POUCH:
         entity->texture = game->sprite[1] ;
+        entity->coolDown = 2 ;
         break;
     
     case ENTITY_SPARCHU:
         entity->texture = game->sprite[4] ;
+        entity->coolDown = 2 ;
+        break;
+    case ENTITY_PLAYER:
+        Deals(game, entity->pos, entity->pos) ;
         break;
     }
 
@@ -82,10 +86,10 @@ void GetReady(Game* game, Entity * entity){
     }
 }
 
-void Attack(Game* game, Entity * entity){
+void Attack(Game* game, Entity * entity, int radius){
     entity->ready = 0 ;
     entity->hp++ ;
-    Explosion(game, entity->pos, 1, Deals) ;
+    Explosion(game, entity->pos, radius, Deals) ;
     switch (entity->type)
         {
         case ENTITY_POUCH:
@@ -106,16 +110,6 @@ void Dash(Game* game, Entity* entity){
     game->start = game->end ;
 
     if (entity->ready == 0){
-        switch (entity->type)
-            {
-            case ENTITY_POUCH:
-                entity->texture = game->sprite[0] ;
-                break;
-            
-            case ENTITY_SPARCHU:
-                entity->texture = game->sprite[3] ;
-                break;
-            }
+        GetStun(game, entity) ;
     }
 }
-

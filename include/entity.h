@@ -12,6 +12,7 @@ typedef enum {
     ENTITY_ENEMY,
     ENTITY_POUCH,
     ENTITY_SPARCHU,
+    ENTITY_BOSS
 } EntityType;
 
 typedef struct {
@@ -34,7 +35,7 @@ void GetBetter(Game* game, Entity * entity) ;
 
 void GetReady(Game* game, Entity * entity) ;
 
-void Attack(Game* game, Entity * entity) ;
+void Attack(Game* game, Entity * entity, int radius) ;
 
 void Dash(Game* game, Entity* entity) ;
 

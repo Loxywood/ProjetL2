@@ -94,6 +94,8 @@ Vector2 SimplePath(Game *game, Vector2 pos, Vector2 aim) ;
 
 void EnemiesTurn(Game* game) ;
 
+void PlayerTurn(Game * game, Entity *player, Vector2 direction) ;
+
 void ListDir(Vector2 * dir) ;
 
 void InitGame(Game *game);
@@ -102,6 +104,9 @@ void UpdateGame(Game *game);
 
 void AddEnnemiPouch(Game *game, Vector2 V) ;
 void AddEnnemiSparchu(Game *game, Vector2 V) ;
+void AddEnnemiBoss(Game *game, Vector2 V) ;
+
+
 void AddWall(Game *game, Vector2 V) ;
 
 //void KeyPressed(Game *game, int key);

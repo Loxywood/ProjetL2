@@ -13,7 +13,7 @@ int main(void)
     Music music = LoadMusicStream("assets/atlasaudio-ambient-cinematic-510518.mp3");
     Game game;
 
-    SetTargetFPS(60);
+    SetTargetFPS(100);
     SetMusicVolume(music, volume);
 
     PlayMusicStream(music);
@@ -23,6 +23,7 @@ int main(void)
     AddEnnemiSparchu(&game, (Vector2){8,8}) ;
     AddWall(&game, (Vector2){7,6}) ;
     AddWall(&game, (Vector2){6,2}) ;
+    AddEnnemiBoss( &game, (Vector2){5,8}) ;
 
 
 

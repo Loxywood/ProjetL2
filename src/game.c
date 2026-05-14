@@ -25,6 +25,8 @@ void InitGame(Game *game) {
     game->sprite[4] = (Texture2D) LoadTexture("assets/sparchu_stun.png"); 
     game->sprite[5] = (Texture2D) LoadTexture("assets/sparchu_ready.png"); 
 
+    game->sprite[6] = (Texture2D) LoadTexture("assets/BOSS.png"); 
+
     game->HPtexture = (Texture2D) LoadTexture("assets/heart.png"); 
 
     game->enemyAliveCount = 0 ;
@@ -37,7 +39,7 @@ void InitGame(Game *game) {
 }
 
 void GameTime(Game* game){
-        game->start, game->end = 0 ;
+        game->start, game->end = 0, 0 ;
         game->turn = ( game->turn +1)  % (game->enemyAliveCount+1 ) ;
 }
 
@@ -64,6 +66,11 @@ void DrawGame(Game *game){
     
     //joueur
     DrawEntity(&game->player, &game->board);
+
+    //munitionsr
+    char message[3] ;
+    sprintf(message, "%d", game->player.ready);
+    DrawText(message, 250, 300, 50, BLACK) ;
 
     //coeurs
     for (int hp = 0 ; hp < game->player.hp ; hp++){
@@ -95,37 +102,43 @@ void HandleKey(Game *game, int key){
         switch (key)
         {
         case KEY_UP:
-            Move(game, game->player.pos, (Vector2){-1,0}, true);
-            game->player.ready++ ; 
-            GameTime(game) ;
+            PlayerTurn(game, &game->player, (Vector2){-1,0});
             break;
 
         case KEY_DOWN:
-            Move(game, game->player.pos, (Vector2){1,0}, true);
-            game->player.ready++ ; 
-            GameTime(game) ;
+            PlayerTurn(game, &game->player, (Vector2){1,0});
             break;
 
         case KEY_LEFT:
-            Move(game, game->player.pos, (Vector2){0,-1}, true);
-            game->player.ready++ ; 
-            GameTime(game) ;
+            PlayerTurn(game, &game->player, (Vector2){0,-1});
             break;
 
         case KEY_RIGHT:
-            Move(game, game->player.pos, (Vector2){0,1}, true);
-            game->player.ready++ ; 
-            GameTime(game) ;
+            PlayerTurn(game, &game->player,(Vector2){0,1}) ;
             break;
 
         case KEY_SPACE :
             if (game->player.ready > 0){
                 Explosion(game, game->player.pos, 2, Push) ;
                 game->player.ready-- ;
+                PlayerTurn(game, &game->player,(Vector2){0,0}) ;
             }
             break;
         }
     }
+}
+
+//essentiel du tour du joueur
+void PlayerTurn(Game * game, Entity *player, Vector2 direction){
+    if( player->coolDown == 2 ){
+        player->ready++ ;
+        player->coolDown = 0 ;
+    }
+    else{player->coolDown++ ;}
+
+    Move(game, game->player.pos, direction, true);
+
+    GameTime(game) ;
 }
 
 //fais apparaitre un ennemie (a renommer en anglais)
@@ -139,6 +152,13 @@ void AddEnnemiPouch(Game *game, Vector2 V){
 void AddEnnemiSparchu(Game *game, Vector2 V){
     if (game->enemyAliveCount < 10){
         InitEntity(&game->enemies[game->enemyAliveCount], V, 1, &game->sprite[3], ENTITY_SPARCHU);
+        game->enemyAliveCount++ ;
+    }
+}
+
+void AddEnnemiBoss(Game *game, Vector2 V){
+    if (game->enemyAliveCount < 10){
+        InitEntity(&game->enemies[game->enemyAliveCount], V, 3, &game->sprite[6], ENTITY_BOSS);
         game->enemyAliveCount++ ;
     }
 }
@@ -229,7 +249,8 @@ void Explosion(Game *game, Vector2 V, int radius, bool (*effect)(Game*, Vector2,
 
 bool Push(Game *game, Vector2 origin, Vector2 aim){
     Vector2 direction = (Vector2){0,0} ;
-    if( ( ENtityAt(game, aim) ) != NULL){
+    Entity *entity = ENtityAt(game, aim) ;
+    if( ( entity ) != NULL){
 
         if (origin.x == aim.x && origin.y == aim.y){ return true ;}
 
@@ -238,13 +259,15 @@ bool Push(Game *game, Vector2 origin, Vector2 aim){
         if(origin.y > aim.y){ direction.y-- ;}
         if(origin.y < aim.y){ direction.y++ ;}
 
+        if( entity->type == ENTITY_BOSS){ return false ;}
+
         bool succes = Move(game, aim, direction, true ) ;
         if (! succes){
-            if (ENtityAt(game, aim)->coolDown > 0){
+            if (entity->coolDown > 0){
                 Deals(game, origin, aim) ;
             }
-            if( ( ENtityAt(game, aim) ) != NULL){
-                GetStun(game, ENtityAt(game, aim)) ;
+            if( ( entity ) != NULL){
+                GetStun(game, entity) ;
             }
         }
         return succes ;
@@ -293,9 +316,29 @@ bool Deals(Game *game, Vector2 origin, Vector2 aim){
 
 void EnemyDeath(Game *game, Vector2 pos){
     int index = 0 ;
+
+
     for (int i = 0 ; i < game->enemyAliveCount ; i++){
         if (game->enemies[i].pos.x == pos.x && game->enemies[i].pos.y == pos.y) {
             index = i ;
+            if (game->enemies[i].type == ENTITY_BOSS){
+                dataMove D ;
+                createDataMouv(2, &D) ;
+
+                FindZone(game, &D, (int) game->enemies[i].pos.x, (int) game->enemies[i].pos.y, GetArea(2) , 2, true) ;
+
+                for(int pos = 0 ; pos < D.cursor_a ; pos++){
+                        TextureToGreen(&game->board, D.acces[pos].x, D.acces[pos].y) ;
+                }
+                free(D.known);
+                free(D.acces);
+                free(D.next);
+                break;
+
+                TextureToGreen(&game->board, 1, 5) ;
+                TextureToGreen(&game->board, 8, 5) ;
+                TextureToGreen(&game->board, 5, 1) ;
+            }
             break ;
         }
     }
@@ -527,22 +570,121 @@ Vector2 RandomDir(Game * game, Vector2 pos){
 void EnemiesTurn(Game* game){
     int i = game->turn ;
     i-- ;
+    Entity *ennemy = &game->enemies[i] ;
     if ( i >= 0 && game->start + game->speed < game->end){
 
+        if(ennemy->type == ENTITY_BOSS) {
+            dataMove D ;
+            switch (ennemy->coolDown)
+            {
+            
+            case 0 :
+            case 4 :
+            case 8 :
+                createDataMouv(2, &D) ;
 
-        if(game->enemies[i].coolDown > 0 ){
-            GetBetter(game, &game->enemies[i]) ;
+                FindZone(game, &D, (int) ennemy->pos.x, (int) ennemy->pos.y, GetArea(2) , 2, true) ;
+
+                for(int pos = 0 ; pos < D.cursor_a ; pos++){
+                        TextureToRed(&game->board, D.acces[pos].x, D.acces[pos].y) ;
+                }
+                free(D.known);
+                free(D.acces);
+                free(D.next);
+                break;
+            
+            case 1 :
+            case 5 :
+            case 9 :
+                Attack(game, ennemy, 2) ;
+                
+                createDataMouv(2, &D) ;
+
+                FindZone(game, &D, (int) ennemy->pos.x, (int) ennemy->pos.y, GetArea(2) , 2, true) ;
+
+                for(int pos = 0 ; pos < D.cursor_a ; pos++){
+                        TextureToGreen(&game->board, D.acces[pos].x, D.acces[pos].y) ;
+                }
+                free(D.known);
+                free(D.acces);
+                free(D.next);
+                break;
+            
+            case 2 :
+                TextureToRed(&game->board, 1,5) ;
+                break;
+
+            case 6 : 
+                TextureToRed(&game->board, 8,5) ;
+                break;
+
+            case 10 :
+                TextureToRed(&game->board, 5, 1) ;
+                break;
+
+
+            case 3 :
+                TextureToGreen(&game->board, 1,5) ;
+                if(IsEmpty(game, (Vector2){1,5}, true)){
+                    AddEnnemiSparchu(game, (Vector2){1,5}) ;
+                    game->enemies[game->enemyAliveCount -1].coolDown ++ ;
+                }
+                else{
+                    Deals(game, (Vector2){1,5}, (Vector2){1,5}) ;
+                }
+                break;
+
+            case 7 : 
+                TextureToGreen(&game->board, 8,5) ;
+                if(IsEmpty(game, (Vector2){8,5}, true)){
+                    AddEnnemiSparchu(game, (Vector2){8,5}) ;
+                    game->enemies[game->enemyAliveCount -1].coolDown ++ ;
+                }
+                else{
+                    Deals(game, (Vector2){8,5}, (Vector2){8,5}) ;
+                }
+                break;
+
+            case 11 :
+                TextureToGreen(&game->board, 5, 1) ;
+                if(IsEmpty(game, (Vector2){5, 1}, true)){
+                    AddEnnemiSparchu(game, (Vector2){5, 1}) ;
+                    game->enemies[game->enemyAliveCount -1].coolDown ++ ;
+                }
+                else{
+                    Deals(game, (Vector2){5, 1}, (Vector2){5, 1}) ;
+                }
+                break;
+
+
+            default:
+                break;
+            }
+            ennemy->coolDown = ( ennemy->coolDown +1 ) %12 ;
+
+
+
+
+
+
+
+
+
+
         }
-        else if (game->enemies[i].ready)
+        else if(ennemy->coolDown > 0 ){
+            GetBetter(game, ennemy) ;
+        }
+        else if (ennemy->ready)
         {
             switch (game->enemies[i].type)
             {
-            case ENTITY_POUCH:
-                Attack(game, &game->enemies[i]) ;
+            case ENTITY_SPARCHU :
+                Attack(game, ennemy, 1) ;
                 break;
             
-            case ENTITY_SPARCHU:
-                Dash(game,  &game->enemies[i]) ;
+            case ENTITY_POUCH :
+                Dash(game,  ennemy) ;
                 break;
             }
             
@@ -550,7 +692,7 @@ void EnemiesTurn(Game* game){
         
         //si le joueur n'est pas detecté -> direction aléatoire
         else{
-            Move(game, game->enemies[i].pos, SimplePath(game, game->enemies[i].pos, game->player.pos), false )  ;
+            Move(game, ennemy->pos, SimplePath(game, ennemy->pos, game->player.pos), false )  ;
         }
         GameTime(game) ;
     }
