@@ -26,7 +26,7 @@ typedef struct Game{
         Board board;
         Entity player;
         Entity enemies[10];
-        Entity walls[20] ;
+        Entity walls[40] ;
         int enemyAliveCount;
         int wallCount ;
         GameState state;
@@ -36,6 +36,7 @@ typedef struct Game{
         int start ;
         int end  ;
         int speed ;
+        void (*NextLevel)(Game *) ;
 }Game;
 
 bool IsEmpty(Game *game, Vector2 V, bool playerIncluded) ;
@@ -97,6 +98,16 @@ void EnemiesTurn(Game* game) ;
 void PlayerTurn(Game * game, Entity *player, Vector2 direction) ;
 
 void ListDir(Vector2 * dir) ;
+
+
+
+void win(Game * game) ;
+void InitLevel1(Game *game);
+void InitLevel2(Game *game);
+void InitLevel3(Game *game);
+void InitLevel4(Game *game);
+void InitLevel5(Game *game);
+
 
 void InitGame(Game *game);
 void DrawGame(Game *game);

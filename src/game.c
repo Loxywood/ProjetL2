@@ -27,15 +27,224 @@ void InitGame(Game *game) {
 
     game->sprite[6] = (Texture2D) LoadTexture("assets/BOSS.png"); 
 
+    game->sprite[7] = (Texture2D) LoadTexture("assets/character.png");
+
+    game->sprite[8] = (Texture2D) LoadTexture("assets/Wall.png");
+
     game->HPtexture = (Texture2D) LoadTexture("assets/heart.png"); 
 
     game->enemyAliveCount = 0 ;
     game->wallCount = 0 ;
-
-    Texture2D mob1 = LoadTexture("assets/character.png");
     //Initialisation du héros;
-    InitEntity(&game->player, (Vector2){0,0}, 3, &mob1, ENTITY_PLAYER);
     game->state = MENU;
+
+    InitLevel1(game) ;
+}
+
+void InitLevel1(Game *game){
+    InitEntity(&game->player, (Vector2){0,0}, 3, &game->sprite[7], ENTITY_PLAYER);
+    game->wallCount = 0 ; 
+    
+    AddWall(game, (Vector2){2,6}) ;
+    AddWall(game, (Vector2){2,7}) ;
+    AddWall(game, (Vector2){3,6}) ;
+    AddWall(game, (Vector2){3,7}) ;
+
+    AddWall(game, (Vector2){3,3}) ;
+    AddWall(game, (Vector2){3,4}) ;
+    AddWall(game, (Vector2){4,4}) ;
+    AddWall(game, (Vector2){4,3}) ;
+
+    AddWall(game, (Vector2){6,2}) ;
+    AddWall(game, (Vector2){6,3}) ;
+    AddWall(game, (Vector2){7,2}) ;
+    AddWall(game, (Vector2){7,3}) ;
+
+    AddWall(game, (Vector2){6,6}) ;
+    AddWall(game, (Vector2){7,6}) ;
+    AddWall(game, (Vector2){7,7}) ;
+    AddWall(game, (Vector2){6,7}) ;
+
+    AddEnnemiSparchu(game, (Vector2){5,6}) ;
+    AddEnnemiSparchu(game, (Vector2){6,4}) ;
+
+    game->NextLevel = InitLevel2 ;
+    
+}
+
+void InitLevel2(Game *game){
+
+    InitEntity(&game->player, (Vector2){0,0}, 3, &game->sprite[7], ENTITY_PLAYER);
+    game->wallCount = 0 ; 
+    
+    for( int i = 0 ; i < 8 ; i++){
+        AddWall(game, (Vector2){i,2}) ;
+    }
+
+    for( int i = 2 ; i < 6 ; i++){
+        AddWall(game, (Vector2){i,4}) ;
+    }
+
+    for( int i = 2 ; i < 8 ; i++){
+        AddWall(game, (Vector2){i,7}) ;
+    }
+
+    for( int i = 3 ; i < 7 ; i++){
+        AddWall(game, (Vector2){7,i}) ;
+    }
+
+    AddWall(game, (Vector2){2,5}) ;
+    AddWall(game, (Vector2){2,6}) ;
+
+    
+
+    AddEnnemiSparchu(game, (Vector2){4,0}) ;
+    AddEnnemiSparchu(game, (Vector2){9,5}) ;
+    AddEnnemiSparchu(game, (Vector2){1,4}) ;
+    AddEnnemiSparchu(game, (Vector2){5,8}) ;
+
+    AddEnnemiPouch(game, (Vector2){4,5}) ;
+
+    game->NextLevel = InitLevel3 ;  
+}
+
+void InitLevel3(Game *game){
+    InitEntity(&game->player, (Vector2){4,6}, 3, &game->sprite[7], ENTITY_PLAYER);
+    game->wallCount = 0 ; 
+    
+    
+    for( int i = 1 ; i < 9 ; i++ ){
+        if (i != 3 && i != 6){
+            AddWall(game, (Vector2){i,1}) ;
+        }
+    } 
+    AddWall(game, (Vector2){4,0}) ;
+    AddWall(game, (Vector2){5,0}) ;
+
+    for( int i = 0 ; i < 10 ; i++ ){
+        if (i != 2 && i != 4 && i != 5 && i != 7){
+            AddWall(game, (Vector2){i,3}) ;
+        }
+    } 
+
+    for( int i = 0 ; i < 10 ; i++ ){
+        if (i != 2  && i != 7){
+            AddWall(game, (Vector2){i,5}) ;
+        }
+    } 
+
+    AddWall(game, (Vector2){3,4}) ;
+    AddWall(game, (Vector2){6,4}) ;
+
+    for( int i = 1 ; i < 9 ; i++ ){
+        if (i != 3 && i != 6){
+            AddWall(game, (Vector2){i,7}) ;
+        }
+    } 
+
+    AddWall(game, (Vector2){2,8}) ;
+    AddWall(game, (Vector2){7,8}) ;
+
+    AddWall(game, (Vector2){4,9}) ;
+    AddWall(game, (Vector2){5,9}) ;
+
+
+
+    AddEnnemiSparchu(game, (Vector2){4,3}) ;
+    AddEnnemiSparchu(game, (Vector2){4,4}) ;
+    AddEnnemiSparchu(game, (Vector2){5,4}) ;
+    AddEnnemiSparchu(game, (Vector2){5,3}) ;
+
+    AddEnnemiPouch(game, (Vector2){1,8}) ;
+    AddEnnemiPouch(game, (Vector2){8,8}) ;
+
+    game->NextLevel = InitLevel4 ;
+    
+}
+
+void InitLevel4(Game *game){
+    InitEntity(&game->player, (Vector2){4,4}, 3, &game->sprite[7], ENTITY_PLAYER);
+    game->wallCount = 0 ; 
+    
+    AddWall(game, (Vector2){2,6}) ;
+
+    for( int i = 1 ; i < 9 ; i++ ){
+        AddWall(game, (Vector2){i,1}) ;
+    } 
+
+    for( int i = 1 ; i < 9 ; i++ ){
+        if(i != 4){
+            AddWall(game, (Vector2){i,8}) ;
+        }
+    } 
+
+    for( int i = 3 ; i < 7 ; i++ ){
+        if(i != 4){
+            AddWall(game, (Vector2){i,3}) ;
+            AddWall(game, (Vector2){i,5}) ;
+        }
+    }
+    AddWall(game, (Vector2){3,6}) ;
+    AddWall(game, (Vector2){5,6}) ;
+
+    for( int i = 2 ; i < 8 ; i++ ){
+        AddWall(game, (Vector2){1,i}) ;
+    }
+
+    for( int i = 2 ; i < 8 ; i++ ){
+        if(i != 4){
+            AddWall(game, (Vector2){8,i}) ;
+        }
+    }
+
+    AddEnnemiSparchu(game, (Vector2){0,0}) ;
+    AddEnnemiSparchu(game, (Vector2){2,2}) ;
+    AddEnnemiSparchu(game, (Vector2){7,7}) ;
+
+    AddEnnemiPouch(game, (Vector2){8,4}) ;
+    AddEnnemiPouch(game, (Vector2){4,8}) ;
+
+
+    game->NextLevel = InitLevel5 ;
+    
+}
+
+void InitLevel5(Game *game){
+    InitEntity(&game->player, (Vector2){0,0}, 3, &game->sprite[7], ENTITY_PLAYER);
+    game->wallCount = 0 ; 
+    
+    AddWall(game, (Vector2){2,6}) ;
+    AddWall(game, (Vector2){6,2}) ;
+
+    AddWall(game, (Vector2){7,7}) ;
+
+    AddWall(game, (Vector2){0,9}) ;
+    AddWall(game, (Vector2){9,0}) ;
+
+    for(int i = 3 ; i < 8 ; i++){
+        if (i != 6){
+            AddWall(game, (Vector2){i,8}) ;
+            AddWall(game, (Vector2){8,i}) ;
+        }
+    }
+
+    for(int i = 0 ; i < 5 ; i++){
+        if (i != 2){
+            AddWall(game, (Vector2){i,3}) ;
+            if(i != 3){
+                AddWall(game, (Vector2){3,i}) ;
+            }
+        }
+    }
+
+    AddEnnemiBoss(game, (Vector2){5,5}) ;
+
+    game->NextLevel = win ;
+    
+}
+
+void win(Game * game){
+
 }
 
 void GameTime(Game* game){
@@ -48,6 +257,10 @@ void UpdateGame(Game *game){
     HandleKey(game, GetKeyPressed());
     game->end ++ ;
     EnemiesTurn(game) ;
+
+    if(game->enemyAliveCount == 0){
+        game->NextLevel(game) ;
+    }
 }
 
 void DrawGame(Game *game){
@@ -122,7 +335,12 @@ void HandleKey(Game *game, int key){
                 Explosion(game, game->player.pos, 2, Push) ;
                 game->player.ready-- ;
                 PlayerTurn(game, &game->player,(Vector2){0,0}) ;
+                
             }
+            break;
+        case KEY_ENTER :
+            printf("%d\n", game->wallCount) ;
+            game->enemyAliveCount = 0 ;
             break;
         }
     }
@@ -165,10 +383,10 @@ void AddEnnemiBoss(Game *game, Vector2 V){
 
 
 void AddWall(Game *game, Vector2 V){
-    if (game->wallCount < 20){
+    if (game->wallCount < 40){
 
-        Texture2D wall = LoadTexture("assets/bolder.png");
-        InitEntity(&game->walls[game->wallCount], V, 1, &wall, ENTITY_ENEMY);
+        
+        InitEntity(&game->walls[game->wallCount], V, 1, &game->sprite[8], ENTITY_ENEMY);
 
         game->wallCount++ ;
     }
@@ -244,8 +462,6 @@ void Explosion(Game *game, Vector2 V, int radius, bool (*effect)(Game*, Vector2,
 
 
 //pousse une personnage (à partir de cases)
-
-
 
 bool Push(Game *game, Vector2 origin, Vector2 aim){
     Vector2 direction = (Vector2){0,0} ;
@@ -335,9 +551,9 @@ void EnemyDeath(Game *game, Vector2 pos){
                 free(D.next);
                 break;
 
-                TextureToGreen(&game->board, 1, 5) ;
-                TextureToGreen(&game->board, 8, 5) ;
-                TextureToGreen(&game->board, 5, 1) ;
+                TextureToGreen(&game->board, 1, 4) ;
+                TextureToGreen(&game->board, 8, 8) ;
+                TextureToGreen(&game->board, 4, 1) ;
             }
             break ;
         }
@@ -560,6 +776,7 @@ Vector2 RandomDir(Game * game, Vector2 pos){
             nb_dir++ ;
         }
     }
+    if (nb_dir == 0){ return (Vector2){0,0} ;}
     int S = rand() %(nb_dir) ;
     Vector2 V = choices[S] ;
     return V ;
@@ -611,41 +828,63 @@ void EnemiesTurn(Game* game){
                 break;
             
             case 2 :
-                TextureToRed(&game->board, 1,5) ;
+                TextureToRed(&game->board, 4,1) ;
                 break;
 
             case 6 : 
-                TextureToRed(&game->board, 8,5) ;
+                TextureToRed(&game->board, 1,4) ;
                 break;
 
-            case 10 :
-                TextureToRed(&game->board, 5, 1) ;
+            case 10 : //trois d'un coup
+                TextureToRed(&game->board, 8,8) ;
+                TextureToRed(&game->board, 1,4) ;
+                TextureToRed(&game->board, 4,1) ;
                 break;
 
 
             case 3 :
-                TextureToGreen(&game->board, 1,5) ;
-                if(IsEmpty(game, (Vector2){1,5}, true)){
-                    AddEnnemiSparchu(game, (Vector2){1,5}) ;
+                TextureToGreen(&game->board, 4,1) ;
+                if(IsEmpty(game, (Vector2){4,1}, true)){
+                    AddEnnemiSparchu(game, (Vector2){4,1}) ;
                     game->enemies[game->enemyAliveCount -1].coolDown ++ ;
                 }
                 else{
-                    Deals(game, (Vector2){1,5}, (Vector2){1,5}) ;
+                    Deals(game, (Vector2){4,1}, (Vector2){4,1}) ;
                 }
                 break;
 
             case 7 : 
-                TextureToGreen(&game->board, 8,5) ;
-                if(IsEmpty(game, (Vector2){8,5}, true)){
-                    AddEnnemiSparchu(game, (Vector2){8,5}) ;
+                TextureToGreen(&game->board, 1,4) ;
+                if(IsEmpty(game, (Vector2){1,4}, true)){
+                    AddEnnemiSparchu(game, (Vector2){1,4}) ;
                     game->enemies[game->enemyAliveCount -1].coolDown ++ ;
                 }
                 else{
-                    Deals(game, (Vector2){8,5}, (Vector2){8,5}) ;
+                    Deals(game, (Vector2){1,4}, (Vector2){1,4}) ;
                 }
                 break;
 
-            case 11 :
+            case 11 : //trois d'un coup
+
+                TextureToGreen(&game->board, 1,4) ;
+                if(IsEmpty(game, (Vector2){1,4}, true)){
+                    AddEnnemiSparchu(game, (Vector2){1,4}) ;
+                    game->enemies[game->enemyAliveCount -1].coolDown ++ ;
+                }
+                else{
+                    Deals(game, (Vector2){1,4}, (Vector2){1,4}) ;
+                }
+
+
+                TextureToGreen(&game->board, 4,1) ;
+                if(IsEmpty(game, (Vector2){4,1}, true)){
+                    AddEnnemiSparchu(game, (Vector2){4,1}) ;
+                    game->enemies[game->enemyAliveCount -1].coolDown ++ ;
+                }
+                else{
+                    Deals(game, (Vector2){4,1}, (Vector2){4,1}) ;
+                }
+
                 TextureToGreen(&game->board, 5, 1) ;
                 if(IsEmpty(game, (Vector2){5, 1}, true)){
                     AddEnnemiSparchu(game, (Vector2){5, 1}) ;
