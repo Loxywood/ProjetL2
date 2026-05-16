@@ -26,7 +26,7 @@ void updateMenu(Menu *menu, Game *game){
         if(isClicked(&menu->buttons[i]) && i==0){
             game->state = GAME;
         }else if(isClicked(&menu->buttons[i]) && i==2){
-            CloseWindow();
+            game->state = QUIT;
         }
     }
 }

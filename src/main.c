@@ -22,7 +22,7 @@ int main(void)
     PlayMusicStream(music);    
 
     //Game loop.
-    while (!WindowShouldClose()){
+    while (!WindowShouldClose() && game.state != QUIT){
         BeginDrawing();
         ClearBackground(SKYBLUE);
         switch (game.state){
@@ -33,6 +33,8 @@ int main(void)
         case MENU:
             updateMenu(&menu, &game);
             DrawMenu(&menu);
+            break;
+        default:
             break;
         }
         
