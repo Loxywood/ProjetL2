@@ -1,4 +1,5 @@
 #include "game.h"
+#include "menu.h"
 #include "raylib.h"
 
 #define GAME_SCALE 0.3f
@@ -39,6 +40,9 @@ void HandleKey(Game *game, int key){
         break;
     case KEY_RIGHT:
         UpdateEntity(&game->player,&game->board,(Vector2){0,1});
+        break;
+    case KEY_ESCAPE:
+        game->state = MENU;
         break;
     }
 }
