@@ -107,7 +107,7 @@ void Dash(Game* game, Entity* entity){
     Move(game, entity->pos, SimplePath(game, entity->pos, game->player.pos), true )  ;
     entity->ready-- ;
     game->turn-- ;
-    game->start = game->end ;
+    game->start = 0 ;
 
     if (entity->ready == 0){
         GetStun(game, entity) ;

@@ -14,7 +14,7 @@ void InitGame(Game *game) {
     BoardInit(&game->board, 10, 10, GAME_SCALE);
     game->turn = 0 ;
     game->start = 0 ;
-    game->end = 0 ;
+    game->on = 1 ;
     game->speed = 1 ;
 
     game->sprite[0] = (Texture2D) LoadTexture("assets/pouch.png"); 
@@ -248,14 +248,14 @@ void win(Game * game){
 }
 
 void GameTime(Game* game){
-        game->start, game->end = 0, 0 ;
+        game->start = 0 ;
         game->turn = ( game->turn +1)  % (game->enemyAliveCount+1 ) ;
 }
 
 void UpdateGame(Game *game){
     //fonction qui gère la logique du jeu
     HandleKey(game, GetKeyPressed());
-    game->end ++ ;
+    game->start ++ ;
     EnemiesTurn(game) ;
 
     if(game->enemyAliveCount == 0){
@@ -311,7 +311,7 @@ void DrawGame(Game *game){
 void HandleKey(Game *game, int key){
     //Pour gérer les inputs du clavier et agir en conséquence.
     //Finalement on transmet un déplacement dans la matrice du plateau plus qu'une position absolue.
-    if (game->turn == 0 && game->start +  game->speed  < game->end  ){
+    if (game->turn == 0 && game->start > game->speed && game->on == 1){
         switch (key)
         {
         case KEY_UP:
@@ -492,7 +492,7 @@ bool Push(Game *game, Vector2 origin, Vector2 aim){
 }
 
 bool Move(Game * game, Vector2 origin, Vector2 dir, bool push){
-    if (dir.x == 0  &&  0== dir.y){
+    if ( (dir.x == 0 )  && ( 0 == dir.y) ){
         return false ;
     }
 
@@ -523,6 +523,7 @@ bool Deals(Game *game, Vector2 origin, Vector2 aim){
                 EnemyDeath(game, aim) ;
                 return true ;
             }
+            else{ game->on = 0 ;}
         }
         
     }
@@ -549,7 +550,6 @@ void EnemyDeath(Game *game, Vector2 pos){
                 free(D.known);
                 free(D.acces);
                 free(D.next);
-                break;
 
                 TextureToGreen(&game->board, 1, 4) ;
                 TextureToGreen(&game->board, 8, 8) ;
@@ -788,7 +788,7 @@ void EnemiesTurn(Game* game){
     int i = game->turn ;
     i-- ;
     Entity *ennemy = &game->enemies[i] ;
-    if ( i >= 0 && game->start + game->speed < game->end){
+    if ( i >= 0 && game->start > game->speed){
 
         if(ennemy->type == ENTITY_BOSS) {
             dataMove D ;

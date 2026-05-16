@@ -34,7 +34,7 @@ typedef struct Game{
         Texture2D HPtexture ;
         int turn ;
         int start ;
-        int end  ;
+        int on ;
         int speed ;
         void (*NextLevel)(Game *) ;
 }Game;
