@@ -14,5 +14,6 @@ typedef struct Button{
 void InitButton(Button *button, int x, int y, Texture2D texture);
 void DrawButton(Button *button);
 void isHovering(Button *button);
+int isClicked(Button *button);
 
 #endif

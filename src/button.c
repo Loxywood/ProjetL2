@@ -27,3 +27,14 @@ void isHovering(Button *button){
         button->hover = 0;
     }
 }
+
+int isClicked(Button *button){
+    Vector2 mousePos = GetMousePosition();
+    if (mousePos.x >= button->x && mousePos.x <= button->x + button->texture.width && mousePos.y >= button->y && mousePos.y <= button->y + button->texture.height){
+        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)){
+            return 1;
+        }
+    }
+    return 0;
+}
+

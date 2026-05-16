@@ -1,5 +1,4 @@
 #include "menu.h"
-#include "button.h"
 
 void InitMenu(Menu *menu){
 
@@ -21,14 +20,18 @@ void InitMenu(Menu *menu){
 
 }
 
-void updateMenu(Menu *menu){
+void updateMenu(Menu *menu, Game *game){
     for (int i = 0; i < BUTTON_COUNT; i++){
         isHovering(&menu->buttons[i]);
+        if(isClicked(&menu->buttons[i]) && i==0){
+            game->state = GAME;
+        }else if(isClicked(&menu->buttons[i]) && i==2){
+            CloseWindow();
+        }
     }
 }
 
 void DrawMenu(Menu *menu){
-    BeginDrawing();         
     ClearBackground((Color){160, 227, 253, 255});
 
     for (int i = 0; i < BUTTON_COUNT; i++)
@@ -36,5 +39,4 @@ void DrawMenu(Menu *menu){
         DrawButton(&menu->buttons[i]);
     }
     
-    EndDrawing();
 }
