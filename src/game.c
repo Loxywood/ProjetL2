@@ -1,6 +1,7 @@
 
 #include "entity.h"
 #include "game.h"
+#include "menu.h"
 #include "raylib.h"
 #include <math.h>
 #include <stddef.h>
@@ -338,9 +339,13 @@ void HandleKey(Game *game, int key){
                 
             }
             break;
+
         case KEY_ENTER :
             printf("%d\n", game->wallCount) ;
             game->enemyAliveCount = 0 ;
+            break;
+        case KEY_ESCAPE:
+            game->state = MENU;
             break;
         }
     }
@@ -924,6 +929,9 @@ void EnemiesTurn(Game* game){
             
             case ENTITY_POUCH :
                 Dash(game,  ennemy) ;
+                break;
+
+            default:
                 break;
             }
             

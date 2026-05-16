@@ -52,6 +52,8 @@ void GetStun(Game* game, Entity * entity){
     case ENTITY_PLAYER:
         Deals(game, entity->pos, entity->pos) ;
         break;
+    default:
+        break;
     }
 
 }
@@ -68,6 +70,8 @@ void GetBetter(Game* game, Entity * entity){
         case ENTITY_SPARCHU:
             entity->texture = game->sprite[3] ;
             break;
+        default:
+            break;
         }
     }
 }
@@ -82,6 +86,8 @@ void GetReady(Game* game, Entity * entity){
     
     case ENTITY_SPARCHU:
         entity->texture = game->sprite[5] ;
+        break;
+    default:
         break;
     }
 }
@@ -98,6 +104,8 @@ void Attack(Game* game, Entity * entity, int radius){
         
         case ENTITY_SPARCHU:
             entity->texture = game->sprite[3] ;
+            break;
+        default:
             break;
         }
 }

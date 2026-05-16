@@ -19,7 +19,8 @@ typedef struct {
 
 typedef enum {
         MENU,
-        GAME
+        GAME,
+        QUIT
 }GameState;
 
 typedef struct Game{
