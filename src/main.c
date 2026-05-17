@@ -3,10 +3,11 @@
 #include "menu.h"
 #include "raylib.h"
 
+
 int main(void)
 {
     //Ouverture de la fenêtre :
-    InitWindow(1920, 1080, "Projet L2 info");
+    InitWindow(1920, 1000, "Projet L2 info");
     InitAudioDevice(); 
 
     float volume = 0.05f; //Valeur temporaire pour le bien de mon ouïe.
@@ -14,7 +15,7 @@ int main(void)
     Game game;
     Menu menu;
 
-    SetTargetFPS(60);
+    SetTargetFPS(144);
     SetExitKey(KEY_NULL);
     InitGame(&game);
     InitMenu(&menu);

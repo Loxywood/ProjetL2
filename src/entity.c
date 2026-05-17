@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "game.h"
 #include "raylib.h"
 #include <stdio.h>
 
@@ -8,6 +9,8 @@ void InitEntity(Entity *entity, Vector2 pos, int hp, Texture2D *texture, EntityT
     entity->hp = hp;
     entity->type = type;
     entity->texture = *texture;
+    entity->coolDown = 0 ;
+    entity->ready = 0 ;
 }
 
 void DrawEntity(Entity *entity, Board *board) {
@@ -30,5 +33,91 @@ void UpdateEntity(Entity *entity, Board *board, Vector2 pos){
         newPos.y = board->height - 1;
     }
     entity->pos = newPos;
-    //printf("New position : %f, %f\n", entity->pos.x, entity->pos.y);
+        //printf("New position : %f, %f\n", entity->pos.x, entity->pos.y);
+}
+
+void GetStun(Game* game, Entity * entity){
+    entity->ready = 0 ;
+    switch (entity->type)
+    {
+    case ENTITY_POUCH:
+        entity->texture = game->sprite[1] ;
+        entity->coolDown = 2 ;
+        break;
+    
+    case ENTITY_SPARCHU:
+        entity->texture = game->sprite[4] ;
+        entity->coolDown = 2 ;
+        break;
+    case ENTITY_PLAYER:
+        Deals(game, entity->pos, entity->pos) ;
+        break;
+    default:
+        break;
+    }
+
+}
+
+void GetBetter(Game* game, Entity * entity){
+    entity->coolDown--;
+    if (entity->coolDown == 0){
+        switch (entity->type)
+        {
+        case ENTITY_POUCH:
+            entity->texture = game->sprite[0] ;
+            break;
+        
+        case ENTITY_SPARCHU:
+            entity->texture = game->sprite[3] ;
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void GetReady(Game* game, Entity * entity){
+    entity->ready = 2 ;
+    switch (entity->type)
+    {
+    case ENTITY_POUCH:
+        entity->texture = game->sprite[2] ;
+        break;
+    
+    case ENTITY_SPARCHU:
+        entity->texture = game->sprite[5] ;
+        break;
+    default:
+        break;
+    }
+}
+
+void Attack(Game* game, Entity * entity, int radius){
+    entity->ready = 0 ;
+    entity->hp++ ;
+    Explosion(game, entity->pos, radius, Deals) ;
+    switch (entity->type)
+        {
+        case ENTITY_POUCH:
+            entity->texture = game->sprite[0] ;
+            break;
+        
+        case ENTITY_SPARCHU:
+            entity->texture = game->sprite[3] ;
+            break;
+        default:
+            break;
+        }
+}
+
+void Dash(Game* game, Entity* entity){
+    
+    Move(game, entity->pos, SimplePath(game, entity->pos, game->player.pos), true )  ;
+    entity->ready-- ;
+    game->turn-- ;
+    game->start = 0 ;
+
+    if (entity->ready == 0){
+        GetStun(game, entity) ;
+    }
 }

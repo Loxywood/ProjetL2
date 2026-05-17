@@ -15,14 +15,15 @@ void BoardInit(Board *board, int width, int height, float scale){
         board->tiles[i] = (Tile*)malloc(board->height * sizeof(Tile));
     }
     //
-    Texture2D grass_texture = LoadTexture("assets/grass_tile_crop.png"); //Texture par défaut, à remplacer plus tard.
+    board->grass_texture = LoadTexture("assets/grass_tile_crop.png"); //Texture par défaut, à remplacer plus tard.
+    board->red_grass_texture = LoadTexture("assets/red_tall_tile.png");
     //
     for(int i=0;i<board->width;i++){
         for(int j=0;j<board->height;j++){
 
-            float posX = (board->startX)+(j-i)*(board->tile_scale)*(grass_texture.width / 2.0f);
-            float posY = board->startY+(j+i)*board->tile_scale*(grass_texture.height / 4.0f);
-            InitTile(&board->tiles[i][j], grass_texture, posX, posY); //Initialisation de chaque tuile avec la texture et les positions.
+            float posX = (board->startX)+(j-i)*(board->tile_scale)*(board->grass_texture.width / 2.0f);
+            float posY = board->startY+(j+i)*board->tile_scale*(board->grass_texture.height / 4.0f);
+            InitTile(&board->tiles[i][j], board->grass_texture, posX, posY); //Initialisation de chaque tuile avec la texture et les positions.
         }
     }
 }
@@ -34,4 +35,12 @@ void DrawBoard(Board *board){
             DrawTile(&board->tiles[i][j], board->tile_scale);
         }
     }
+}
+
+void TextureToRed(Board *board, int x, int y){
+    board->tiles[x][y].texture = board->red_grass_texture ;
+}
+
+void TextureToGreen(Board *board, int x, int y){
+    board->tiles[x][y].texture = board->grass_texture ;
 }
